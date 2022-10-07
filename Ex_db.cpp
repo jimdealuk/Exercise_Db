@@ -526,6 +526,29 @@ namespace ExercideDbUI
         }
     };
 
+    class DisplayExercisesCommand : public Command {
+
+    private:
+        ExerciseDataApp::ExerciseData* m_dataSource;
+
+    public:
+        DisplayExercisesCommand(ExerciseDataApp::ExerciseData* receiver) : m_dataSource(receiver) {
+        }
+        /**
+         * Commands can delegate to any methods of a receiver.
+         */
+        void Execute() const override {
+            std::cout << "List of current exercises \n";
+            std::vector<BaseEx> tags;
+            m_dataSource->GetExDb(tags);
+            for (auto tg : tags)
+            {
+                std::cout << tg.exName << std::endl;
+            }
+        }
+    };
+
+
     class AddTagsCommand : public Command {
 
     private:
@@ -550,19 +573,22 @@ namespace ExercideDbUI
                 }
                 std::cout << "Input new tag - fin tp finish: \n";
                 std::getline(std::cin, tag);
-                if (tag == "fin")
+                if (tag.length() > 0)
                 {
-                    stopAdding = true;
-                }
-
-                if (!stopAdding)
-                {
-                    if (!m_dataSource->AddTag(tag))
+                    if (tag == "fin")
                     {
-                        std::cout << "tag not added \n";
+                        stopAdding = true;
                     }
+
+                    if (!stopAdding)
+                    {
+                        if (!m_dataSource->AddTag(tag))
+                        {
+                            std::cout << "tag not added \n";
+                        }
+                    }
+                    std::cout << "*************************** \n";
                 }
-                std::cout << "*************************** \n";
 
             } while (!stopAdding);
         }
@@ -714,6 +740,8 @@ namespace ExercideDbUI
                 {
                     case 1:
                     {
+                        std::unique_ptr<ExercideDbUI::DisplayExercisesCommand> dtc = std::make_unique<ExercideDbUI::DisplayExercisesCommand>(m_exDb.get());
+                        dtc->Execute();
                         break;
                     }
                     case 2:
@@ -725,6 +753,8 @@ namespace ExercideDbUI
                     }
                     case 3:
                     {
+                        std::unique_ptr<ExercideDbUI::AddTagsCommand> atc = std::make_unique<ExercideDbUI::AddTagsCommand>(m_exDb.get());
+                        atc->Execute();
                         break;
 
                     }
