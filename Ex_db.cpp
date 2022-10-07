@@ -675,7 +675,78 @@ namespace ExercideDbUI
             } while (!stopAdding);
             m_dataSource->AddExercise(exToAdd);
         }
+    };
 
+
+    class Invoker {
+        std::shared_ptr <ExerciseDataApp::ExerciseData> m_exDb;
+
+
+    public:
+        Invoker() = default;
+        Invoker(Invoker& inv) = delete;
+        Invoker(std::shared_ptr<ExerciseDataApp::ExerciseData> receiver) {
+            m_exDb = std::move(receiver);
+        }
+
+        void StartUI() {
+            bool exitMenu = { false };
+            std::cout << "welcome to exercise database - choose your option : \n";
+            int opt = { 0 };
+            std::cout << "1: List Exercises\n";
+            std::cout << "2: List Exercises\n";
+            std::cout << "3: Add Tag \n";
+            std::cout << "4: Add Exercise \n";
+            std::cout << "5: Exit \n";
+
+            std::cin >> opt;
+            do {
+                
+                do {
+                    if ((opt < 1) || (opt > 5))
+                    {
+                        std::cout << "Invalid Entry - please enter number between 1 & 5\n";
+                        std::cin >> opt;
+                    }
+                } while ((opt < 1) || (opt > 5));
+
+                switch (opt)
+                {
+                    case 1:
+                    {
+                        break;
+                    }
+                    case 2:
+                    {
+                        std::unique_ptr<ExercideDbUI::DisplayTagsCommand> dtc = std::make_unique<ExercideDbUI::DisplayTagsCommand>(m_exDb.get());
+                        dtc->Execute();
+                        break;
+
+                    }
+                    case 3:
+                    {
+                        break;
+
+                    }
+                    case 4:
+                    {
+                        break;
+
+                    }
+                    case 5:
+                    default:
+                    {
+                        exitMenu = true;
+                        return;
+                    }
+                }
+                std::cout << "Please Input Next Operation\n";
+                std::cin >> opt;
+
+
+            } while (!exitMenu);
+
+        }
 
     };
 
@@ -687,7 +758,13 @@ int main()
     std::unique_ptr<ExerciseDbHandling::ExerciseDbHandlerBase> exh = std::make_unique<ExerciseDbHandling::ExerciseDbFileHandler>();
 
     std::unique_ptr<ExerciseDataApp::ExerciseData> db = std::make_unique< ExerciseDataApp::ExerciseData>(std::move(exh));
-    db->InitialiseExerciseDb();
+
+    std::shared_ptr<ExerciseDataApp::ExerciseData> dbShared = std::move(db);
+
+    dbShared->InitialiseExerciseDb();
+
+
+
 
     //std::unique_ptr<ExercideDbUI::DisplayTagsCommand> dtc = std::make_unique<ExercideDbUI::DisplayTagsCommand>(db.get());
     //dtc->Execute();
@@ -698,7 +775,12 @@ int main()
     //std::unique_ptr<ExercideDbUI::SaveDbToFileCommand> stc = std::make_unique<ExercideDbUI::SaveDbToFileCommand>(db.get());
     //stc->Execute();
 
-    std::unique_ptr<ExercideDbUI::AddExerciseCommand> stc = std::make_unique<ExercideDbUI::AddExerciseCommand>(db.get());
-    stc->Execute();
+    //std::unique_ptr<ExercideDbUI::AddExerciseCommand> stc = std::make_unique<ExercideDbUI::AddExerciseCommand>(db.get());
+    //stc->Execute();
+
+    std::unique_ptr<ExercideDbUI::Invoker> ui = std::make_unique < ExercideDbUI::Invoker>(dbShared);
+    ui->StartUI();
+
+
 
 }
