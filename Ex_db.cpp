@@ -694,7 +694,7 @@ namespace ExercideDbUI
             std::cout << "welcome to exercise database - choose your option : \n";
             int opt = { 0 };
             std::cout << "1: List Exercises\n";
-            std::cout << "2: List Exercises\n";
+            std::cout << "2: List Tags\n";
             std::cout << "3: Add Tag \n";
             std::cout << "4: Add Exercise \n";
             std::cout << "5: Exit \n";
