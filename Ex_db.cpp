@@ -69,6 +69,7 @@ namespace ExerciseDbHandling
         virtual void GetExTags(std::vector<std::string>& tagsHandle) = 0;
 
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags) = 0;
+        virtual void SetExercises(std::unique_ptr<std::vector<BaseEx>> tags) = 0;
 
         virtual ~ExerciseDbHandlerBase() = default;
     };
@@ -93,6 +94,7 @@ namespace ExerciseDbHandling
         virtual void GetExTags(std::vector<std::string>& tagsHandle);
 
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags);
+        virtual void SetExercises(std::unique_ptr<std::vector<BaseEx>> tags);
 
         virtual ~ExerciseDbFileHandler() = default;
 
@@ -284,6 +286,11 @@ namespace ExerciseDbHandling
         m_tags = std::move(tags);
     }
 
+    void ExerciseDbFileHandler::SetExercises(std::unique_ptr<std::vector<BaseEx>> tags)
+    {
+        m_exercises = std::move(tags);
+    }
+
 }
 
 
@@ -372,6 +379,10 @@ namespace ExerciseDbClass
     bool ExerciseDb::AddExercise(BaseEx ex)
     {
         m_exercises->push_back(ex);
+        m_exercisesBase->SetExercises(std::move(m_exercises));
+
+        m_exercises = std::make_unique< std::vector<BaseEx> >();
+        m_exercisesBase->GetExDb(*(m_exercises.get()));
 
         return true;
     }
@@ -418,6 +429,11 @@ namespace ExerciseDbClass
 }
 
 
+/* Wrapper round the exercise database :
+*  creates database and handles commands to-
+*  load / initialise the database
+*  handle commands to extract, update & save exercises
+*/
 namespace ExerciseDataApp
 {
 
@@ -437,12 +453,9 @@ namespace ExerciseDataApp
 
         bool AddTag(std::string tag);
 
-
         bool CheckExerciseExists(std::string ex);
         bool CheckTagsExists(std::string ex);
         bool AddExercise(BaseEx ex);
-
-
     };
 
     ExerciseData::ExerciseData(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle)
@@ -471,7 +484,6 @@ namespace ExerciseDataApp
         m_exDb->GetExDb(dbHandle);
     }
 
-
     bool ExerciseData::AddTag(std::string tag)
     {
         return m_exDb->AddTag(tag);
@@ -490,10 +502,15 @@ namespace ExerciseDataApp
     {
         return m_exDb->CheckTagExists(ex);
     }
-
-
 }
 
+/* Creates Application "UI"
+*  all commands to interact with exercise database
+*  invoker that handles the creation of base "UI" 
+*  creation and execution of the commands
+* 
+*  ALL commands classes implement Command base class.
+*/
 namespace ExercideDbUI
 {
 
@@ -628,14 +645,19 @@ namespace ExercideDbUI
             std::vector<BaseEx> exs;
             m_dataSource->GetExDb(exs);
 
-            for (auto tg : exs)
+            for (auto ex : exs)
             {
-                std::cout << tg.exName << std::endl;
+                std::cout << ex.exName << "\n";
             }
 
-            std::string exercise;
-            std::cout << "Add exercise name " << std::endl;
-            std::getline(std::cin, exercise);
+            std::string exercise = {""};
+            std::cout << "Add exercise name\n";
+            std::cin.clear();
+
+            do
+            {
+                std::getline(std::cin, exercise);
+            } while (exercise.length() == 0);
 
             std::locale loc;
             std::string exTag = { "" };
@@ -680,11 +702,7 @@ namespace ExercideDbUI
 
                 if (!stopAdding)
                 {
-                    if (m_dataSource->CheckTagsExists(tag))
-                    {
-                        std::cout << "tag not added \n";
-                    }
-                    else
+                    if (!m_dataSource->CheckTagsExists(tag))
                     {
                         m_dataSource->AddTag(tag);
                     }
@@ -723,18 +741,19 @@ namespace ExercideDbUI
             std::cout << "2: List Tags\n";
             std::cout << "3: Add Tag \n";
             std::cout << "4: Add Exercise \n";
-            std::cout << "5: Exit \n";
+            std::cout << "5: save Exercises to file \n";
+            std::cout << "6: Exit \n";
 
             std::cin >> opt;
             do {
                 
                 do {
-                    if ((opt < 1) || (opt > 5))
+                    if ((opt < 1) || (opt > 6))
                     {
-                        std::cout << "Invalid Entry - please enter number between 1 & 5\n";
+                        std::cout << "Invalid Entry - please enter number between 1 & 6\n";
                         std::cin >> opt;
                     }
-                } while ((opt < 1) || (opt > 5));
+                } while ((opt < 1) || (opt > 6));
 
                 switch (opt)
                 {
@@ -760,10 +779,19 @@ namespace ExercideDbUI
                     }
                     case 4:
                     {
+                        std::unique_ptr<ExercideDbUI::AddExerciseCommand> stc = std::make_unique<ExercideDbUI::AddExerciseCommand>(m_exDb.get());
+                        stc->Execute();
                         break;
 
                     }
                     case 5:
+                    {
+                        std::unique_ptr<ExercideDbUI::SaveDbToFileCommand> stc = std::make_unique<ExercideDbUI::SaveDbToFileCommand>(m_exDb.get());
+                        stc->Execute();
+                        break;
+
+                    }
+                    case 6:
                     default:
                     {
                         exitMenu = true;
@@ -773,12 +801,43 @@ namespace ExercideDbUI
                 std::cout << "Please Input Next Operation\n";
                 std::cin >> opt;
 
-
             } while (!exitMenu);
 
         }
 
     };
+
+}
+
+namespace ExerciseTemplates
+{
+    class Sections
+    {
+    private:
+        std::vector<std::string> m_sections;
+
+    public:
+        Sections() = default;
+        Sections(Sections& sec) = delete;
+
+        void GetSections(std::vector<std::string>& secs)
+        {
+            secs = m_sections;
+        }
+
+        bool AddSection(std::string sec)
+        {
+            bool ret = { false };
+            auto it = std::find(m_sections.begin(), m_sections.end(), sec);
+            if (it == m_sections.end())
+            {
+                m_sections.push_back(sec);
+                ret = true;
+            }
+            return ret;
+        }
+    };
+
 
 }
 
@@ -792,21 +851,6 @@ int main()
     std::shared_ptr<ExerciseDataApp::ExerciseData> dbShared = std::move(db);
 
     dbShared->InitialiseExerciseDb();
-
-
-
-
-    //std::unique_ptr<ExercideDbUI::DisplayTagsCommand> dtc = std::make_unique<ExercideDbUI::DisplayTagsCommand>(db.get());
-    //dtc->Execute();
-
-    //std::unique_ptr<ExercideDbUI::AddTagsCommand> atc = std::make_unique<ExercideDbUI::AddTagsCommand>(db.get());
-    //atc->Execute();
-
-    //std::unique_ptr<ExercideDbUI::SaveDbToFileCommand> stc = std::make_unique<ExercideDbUI::SaveDbToFileCommand>(db.get());
-    //stc->Execute();
-
-    //std::unique_ptr<ExercideDbUI::AddExerciseCommand> stc = std::make_unique<ExercideDbUI::AddExerciseCommand>(db.get());
-    //stc->Execute();
 
     std::unique_ptr<ExercideDbUI::Invoker> ui = std::make_unique < ExercideDbUI::Invoker>(dbShared);
     ui->StartUI();
