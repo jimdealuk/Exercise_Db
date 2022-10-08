@@ -29,4 +29,6 @@ the writing back to the data storage mechanism
 This code does NOT contain:  
 a full ui - it's console based  
 unit tests - currently no unit tests created  
+this is the code file from a visual studio project - the full project is currently NOT loaded in to this repo  
+
 
