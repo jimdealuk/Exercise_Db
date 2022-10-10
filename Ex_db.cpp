@@ -138,6 +138,9 @@ namespace ExerciseDbHandling
             std::string tag = { "" };
             std::string allTags = { "" };
 
+            std::vector<BaseEx> tempExcerises;
+            std::vector<std::string> tempTags;
+
             if (fs.is_open())
             {
                 while (std::getline(fs, line))
@@ -176,7 +179,7 @@ namespace ExerciseDbHandling
 
                         BaseEx exToAdd = { ex, tagVec };
 
-                        m_exercises->push_back(exToAdd);
+                        tempExcerises.push_back(exToAdd);
                     }
                     if ((tagsProc) && (line.find(CoreData::dataIn) == std::string::npos) && (line.find(CoreData::dataOut) == std::string::npos))
                     {
@@ -185,12 +188,17 @@ namespace ExerciseDbHandling
                             size_t cp = line.find(CoreData::tagSep);
                             std::string tag = line.substr(0, cp);
 
-                            m_tags->push_back(tag);
+                            tempTags.push_back(tag);
                         }
                     }
                 }
                 ret = true;
             }
+            // add exercises in to container attribute *after* all of them have been retreived
+            using std::begin, std::end;
+            m_exercises->insert(end(*m_exercises), begin(tempExcerises), end(tempExcerises));
+            m_tags->insert(end(*m_tags), begin(tempTags), end(tempTags));
+
         }
         catch (...)
         {
@@ -356,11 +364,19 @@ namespace ExerciseDbClass
     {
         bool ret = { false };
 
-        auto it = std::find_if(m_exercises->begin(), m_exercises->end(), [exStr](BaseEx& f) { return f.exName == exStr; });
-        if (it != m_exercises->end())
+        try 
         {
-            ret = true;
+            auto it = std::find_if(m_exercises->begin(), m_exercises->end(), [exStr](BaseEx& f) { return f.exName == exStr; });
+            if (it != m_exercises->end())
+            {
+                ret = true;
+            }
         }
+        catch (...)
+        {
+            // ret already set
+        }
+
         return ret;
     }
 
@@ -368,10 +384,17 @@ namespace ExerciseDbClass
     {
         bool ret = { false };
 
-        auto it = std::find_if(m_tags->begin(), m_tags->end(), [exStr](std::string& f) { return f == exStr; });
-        if (it != m_tags->end())
+        try
         {
-            ret = true;
+            auto it = std::find_if(m_tags->begin(), m_tags->end(), [exStr](std::string& f) { return f == exStr; });
+            if (it != m_tags->end())
+            {
+                ret = true;
+            }
+        }
+        catch (...)
+        {
+            // ret already set
         }
         return ret;
     }
@@ -391,27 +414,34 @@ namespace ExerciseDbClass
     {
         bool ret = { false };
 
-        std::locale loc;
-        std::string exTag = { "" };
-        for (auto elem : tag)
+        try
         {
-            char c = std::tolower(elem, loc);
-            if (isalpha(c))
+            std::locale loc;
+            std::string exTag = { "" };
+            for (auto elem : tag)
             {
-                exTag.append(1, c);
+                char c = std::tolower(elem, loc);
+                if (isalpha(c))
+                {
+                    exTag.append(1, c);
+                }
+            }
+
+            auto it = std::find(m_tags->begin(), m_tags->end(), exTag);
+            if (it == m_tags->end())
+            {
+                m_tags->push_back(exTag);
+                m_exercisesBase->SetExTags(std::move(m_tags));
+
+                m_tags = std::make_unique< std::vector<std::string> >();
+                m_exercisesBase->GetExTags(*(m_tags.get()));
+
+                ret = true;
             }
         }
-
-        auto it = std::find(m_tags->begin(), m_tags->end(), exTag);
-        if (it == m_tags->end())
+        catch (...)
         {
-            m_tags->push_back(exTag);
-            m_exercisesBase->SetExTags(std::move(m_tags));
-
-            m_tags = std::make_unique< std::vector<std::string> >();
-            m_exercisesBase->GetExTags(*(m_tags.get()));
-
-            ret = true;
+            // ret already set
         }
 
         return ret;
@@ -642,82 +672,94 @@ namespace ExercideDbUI
          */
         void Execute() const override {
 
-            std::vector<BaseEx> exs;
-            m_dataSource->GetExDb(exs);
-
-            for (auto ex : exs)
+            try 
             {
-                std::cout << ex.exName << "\n";
-            }
+                std::vector<BaseEx> exs;
+                m_dataSource->GetExDb(exs);
 
-            std::string exercise = {""};
-            std::cout << "Add exercise name\n";
-            std::cin.clear();
-
-            do
-            {
-                std::getline(std::cin, exercise);
-            } while (exercise.length() == 0);
-
-            std::locale loc;
-            std::string exTag = { "" };
-            for (auto elem : exercise)
-            {
-                char c = std::tolower(elem, loc);
-                if (isalpha(c))
+                for (auto ex : exs)
                 {
-                    exTag.append(1, c);
-                }
-            }
-
-            if (exTag == "fin")
-            {
-                return;
-            }
-
-            if (m_dataSource->CheckExerciseExists(exTag))
-            {
-                return;
-            }
-
-            // new exercise - havent finished..
-            BaseEx exToAdd = { exTag };
-
-            std::string tag = { "" };
-            bool stopAdding = { false };
-            do {
-                std::cout << "Current tags : \n";
-                std::vector<std::string> tags;
-                m_dataSource->GetTagsDb(tags);
-                for (auto tg : tags)
-                {
-                    std::cout << tg << std::endl;
-                }
-                std::cout << "Input new tag - fin to finish: \n";
-                std::getline(std::cin, tag);
-                if (tag == "fin")
-                {
-                    stopAdding = true;
+                    std::cout << ex.exName << "\n";
                 }
 
-                if (!stopAdding)
+                std::string exercise = { "" };
+                std::cout << "Add exercise name\n";
+                std::cin.clear();
+
+                do
                 {
-                    if (!m_dataSource->CheckTagsExists(tag))
+                    std::getline(std::cin, exercise);
+                } while (exercise.length() == 0);
+
+                std::locale loc;
+                std::string exTag = { "" };
+                for (auto elem : exercise)
+                {
+                    char c = std::tolower(elem, loc);
+                    if (isalpha(c))
                     {
-                        m_dataSource->AddTag(tag);
-                    }
-                    
-                    auto it = std::find(exToAdd.exTags.begin(), exToAdd.exTags.end(), tag);
-                    if (it == exToAdd.exTags.end())
-                    {
-                        exToAdd.exTags.push_back(tag);
+                        exTag.append(1, c);
                     }
                 }
 
-                std::cout << "*************************** \n";
+                if (exTag == "fin")
+                {
+                    return;
+                }
 
-            } while (!stopAdding);
-            m_dataSource->AddExercise(exToAdd);
+                if (m_dataSource->CheckExerciseExists(exTag))
+                {
+                    return;
+                }
+
+                // new exercise - havent finished..
+                BaseEx exToAdd = { exTag };
+
+                std::string tag = { "" };
+                bool stopAdding = { false };
+                do {
+                    std::cout << "Current tags : \n";
+                    std::vector<std::string> tags;
+                    m_dataSource->GetTagsDb(tags);
+                    for (auto tg : tags)
+                    {
+                        std::cout << tg << std::endl;
+                    }
+                    std::cout << "Input new tag - fin to finish: \n";
+
+                    do
+                    {
+                        std::getline(std::cin, tag);
+                    } while (tag.length() == 0);
+
+                    if (tag == "fin")
+                    {
+                        stopAdding = true;
+                    }
+
+                    if (!stopAdding)
+                    {
+                        if (!m_dataSource->CheckTagsExists(tag))
+                        {
+                            m_dataSource->AddTag(tag);
+                        }
+
+                        auto it = std::find(exToAdd.exTags.begin(), exToAdd.exTags.end(), tag);
+                        if (it == exToAdd.exTags.end())
+                        {
+                            exToAdd.exTags.push_back(tag);
+                        }
+                    }
+
+                    std::cout << "*************************** \n";
+
+                } while (!stopAdding);
+                m_dataSource->AddExercise(exToAdd);
+            }
+            catch (...)
+            {
+                std::cout << "Couldn't add exercise \n";
+            }
         }
     };
 
@@ -750,6 +792,9 @@ namespace ExercideDbUI
                 do {
                     if ((opt < 1) || (opt > 6))
                     {
+                        std::cin.clear();
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
                         std::cout << "Invalid Entry - please enter number between 1 & 6\n";
                         std::cin >> opt;
                     }
@@ -798,6 +843,7 @@ namespace ExercideDbUI
                         return;
                     }
                 }
+
                 std::cout << "Please Input Next Operation\n";
                 std::cin >> opt;
 
@@ -845,16 +891,25 @@ namespace ExerciseTemplates
 int main()
 {
     std::unique_ptr<ExerciseDbHandling::ExerciseDbHandlerBase> exh = std::make_unique<ExerciseDbHandling::ExerciseDbFileHandler>();
+    if (exh)
+    {
+        std::unique_ptr<ExerciseDataApp::ExerciseData> db = std::make_unique< ExerciseDataApp::ExerciseData>(std::move(exh));
 
-    std::unique_ptr<ExerciseDataApp::ExerciseData> db = std::make_unique< ExerciseDataApp::ExerciseData>(std::move(exh));
+        if (db)
+        {
+            std::shared_ptr<ExerciseDataApp::ExerciseData> dbShared = std::move(db);
 
-    std::shared_ptr<ExerciseDataApp::ExerciseData> dbShared = std::move(db);
+            if(dbShared)
+            {
+                dbShared->InitialiseExerciseDb();
 
-    dbShared->InitialiseExerciseDb();
-
-    std::unique_ptr<ExercideDbUI::Invoker> ui = std::make_unique < ExercideDbUI::Invoker>(dbShared);
-    ui->StartUI();
-
-
+                std::unique_ptr<ExercideDbUI::Invoker> ui = std::make_unique < ExercideDbUI::Invoker>(dbShared);
+                if (ui)
+                {
+                    ui->StartUI();
+                }
+            }
+        }
+    }
 
 }
