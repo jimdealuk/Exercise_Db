@@ -26,9 +26,17 @@ the addition of exercisesand tags
 the writing back to the data storage mechanism
 
 
+The classes contained in the namespace ExercideDbUI are the "ui" controls
+
+The command pattern interface is defined in the Command interface class
+
+All the "commands" in the UI inherit from the Command class and implement the relevant functionality.
+This ranges from displaying a list of exercises, to saving the exercises and tags to the relevant storage.
+
+The UI itself is started from the Invoker class. This class creates and then executes the relevant command.
+
 This code does NOT contain:  
 a full ui - it's console based  
 unit tests - currently no unit tests created  
-this is the code file from a visual studio project - the full project is currently NOT loaded in to this repo  
 
 
