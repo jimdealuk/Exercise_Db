@@ -21,6 +21,9 @@ namespace ExerciseDbHandling
     */
     class ExerciseDbFileHandler : public ExerciseDbHandlerBase
     {
+    private:
+        // the exercise, tag and section containers populated from the 
+        // exercises database
         std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
         std::unique_ptr<std::vector<std::string>> m_workoutSectiontags;
@@ -28,18 +31,21 @@ namespace ExerciseDbHandling
     public:
         ExerciseDbFileHandler();
         ExerciseDbFileHandler(ExerciseDbFileHandler& exDb) = delete;
+        virtual ~ExerciseDbFileHandler() = default;
+
         virtual bool ReadExDb();
         virtual bool WriteExDb();
 
+        // Get the exercises, tags and section containers from the database
         virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
         virtual void GetExTags(std::vector<std::string>& tagsHandle);
         virtual void GetWorkoutSection(std::vector<std::string>& tagsHandle);
 
+        // Set the exercises, tags and section containers in the database
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags);
         virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags);
         virtual void SetWorkoutSection(std::unique_ptr<std::vector<std::string>> tags);
 
-        virtual ~ExerciseDbFileHandler() = default;
 
     };
 }

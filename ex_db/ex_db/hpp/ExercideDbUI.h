@@ -12,7 +12,9 @@
 */
 namespace ExercideDbUI
 {
-
+    /* Command class
+    *  Describes operations that all commands have to implement
+    */
     class Command {
     public:
         virtual ~Command() {
@@ -20,7 +22,9 @@ namespace ExercideDbUI
         virtual void Execute() const = 0;
     };
 
-
+    /* DisplayTagsCommand class
+    *  This class displays a list of the tags in the tags database
+    */
     class DisplayTagsCommand : public Command {
 
     private:
@@ -32,6 +36,9 @@ namespace ExercideDbUI
     };
 
 
+    /* DisplayExercisesCommand class
+    *  This class displays a list of the exercises in the exercises database
+    */
     class DisplayExercisesCommand : public Command {
 
     private:
@@ -39,13 +46,13 @@ namespace ExercideDbUI
 
     public:
         DisplayExercisesCommand(ExerciseDataApp::ExerciseData* receiver);
-        /**
-         * Commands can delegate to any methods of a receiver.
-         */
         void Execute() const override;
     };
 
 
+    /* AddTagsCommand class
+    *  This class handles adding a new tag to the tags database
+    */
     class AddTagsCommand : public Command {
 
     private:
@@ -53,13 +60,14 @@ namespace ExercideDbUI
 
     public:
         AddTagsCommand(ExerciseDataApp::ExerciseData* receiver);
-        /**
-         * Commands can delegate to any methods of a receiver.
-         */
         void Execute() const override;
     };
 
 
+    /* SaveDbToFileCommand class
+    *  This class handles saving the tag and exercise storage containers
+    *  to the file in which they are taken from at start up
+    */
     class SaveDbToFileCommand : public Command {
 
     private:
@@ -67,13 +75,13 @@ namespace ExercideDbUI
 
     public:
         SaveDbToFileCommand(ExerciseDataApp::ExerciseData* receiver);
-        /**
-         * Commands can delegate to any methods of a receiver.
-         */
         void Execute() const override;
     };
 
 
+    /* AddExerciseCommand class
+    *  This class handles adding a new exercise to the exercise database
+    */
     class AddExerciseCommand : public Command {
 
     private:
@@ -81,13 +89,17 @@ namespace ExercideDbUI
 
     public:
         AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver);
-        /**
-         * Commands can delegate to any methods of a receiver.
-         */
         void Execute() const override;
     };
 
 
+    /* Invoker class
+    *  This class handles the user interface
+    *  It - gives options on adding and listing tags & exercises to the
+    *  user and then allows then to update the storage with new tags and
+    *  exercises.
+    *  In order to do this it creates and executes the relevant commands
+    */
     class Invoker {
         std::shared_ptr <ExerciseDataApp::ExerciseData> m_exDb;
 

@@ -36,6 +36,12 @@ namespace CoreData
         std::vector<std::string> exTags;
     };
 
+    /* Data Type : ExDescription
+    *  Structure containing exercise name and the 
+    *  weight to be used
+    *  number of repetitions
+    *  number of sets
+    */
     struct ExDescription
     {
         std::string exName;
