@@ -131,10 +131,11 @@
     <ClCompile Include="cpp\ExerciseDb.cpp" />
     <ClCompile Include="cpp\ExerciseDbFileHandler.cpp" />
     <ClCompile Include="ex_db.cpp" />
-    <ClCompile Include="hpp\ExerciseData.cpp" />
+    <ClCompile Include="cpp\ExerciseData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hpp\CoreData.h" />
+    <ClInclude Include="hpp\ExercideDbUI.h" />
     <ClInclude Include="hpp\ExerciseData.h" />
     <ClInclude Include="hpp\ExerciseDb.h" />
     <ClInclude Include="hpp\ExerciseDbFileHandler.h" />

@@ -17,6 +17,7 @@
 #include "hpp/ExerciseDbFileHandler.h"
 #include "hpp/ExerciseDb.h"
 #include "hpp/ExerciseData.h"
+#include "hpp/ExercideDbUI.h"
 
 
 
@@ -31,12 +32,6 @@
 namespace ExercideDbUI
 {
 
-    class Command {
-    public:
-        virtual ~Command() {
-        }
-        virtual void Execute() const = 0;
-    };
 
     class DisplayTagsCommand : public Command {
 

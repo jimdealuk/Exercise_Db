@@ -44,5 +44,8 @@
     <ClInclude Include="hpp\ExerciseData.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="hpp\ExercideDbUI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
