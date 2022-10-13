@@ -18,9 +18,24 @@
     <ClCompile Include="ex_db.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpp\ExerciseDbFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\ExerciseDb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hpp\CoreData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\ExerciseDbHandlerBase.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\ExerciseDbFileHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\ExerciseDb.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -128,10 +128,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cpp\ExerciseDb.cpp" />
+    <ClCompile Include="cpp\ExerciseDbFileHandler.cpp" />
     <ClCompile Include="ex_db.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hpp\CoreData.h" />
+    <ClInclude Include="hpp\ExerciseDb.h" />
+    <ClInclude Include="hpp\ExerciseDbFileHandler.h" />
+    <ClInclude Include="hpp\ExerciseDbHandlerBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

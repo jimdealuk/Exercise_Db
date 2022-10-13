@@ -9,6 +9,7 @@ Exercises
 (chestpress:power)
 (pushdown:arm)
 (lunge:power)
+(ball:power,5)
 }
 {
 Tags
@@ -17,7 +18,8 @@ general,
 govt,
 builder,
 rowing,
-arm
+arm,
+
 }{
 Sections
 warmup,
