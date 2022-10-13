@@ -1,0 +1,15 @@
+{
+Exercises
+(squat:power)
+(deadlift:power,general)
+(clean:power,govt)
+(press:power,builder)
+(curl:builder)
+}
+{
+Tags
+power,
+general,
+govt,
+builder
+}
