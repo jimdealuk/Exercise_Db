@@ -36,6 +36,15 @@ namespace CoreData
         std::vector<std::string> exTags;
     };
 
+    struct ExDescription
+    {
+        std::string exName;
+        int exSets;
+        int exWeight;
+        int exReps;
+    };
+
+
 
 }
 

@@ -10,6 +10,7 @@ Exercises
 (pushdown:arm)
 (lunge:power)
 (ball:power,5)
+(band:general)
 }
 {
 Tags
@@ -19,7 +20,8 @@ govt,
 builder,
 rowing,
 arm,
-
+,
+ball
 }{
 Sections
 warmup,

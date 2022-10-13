@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cpp\ExercideDbUI.cpp" />
     <ClCompile Include="cpp\ExerciseDb.cpp" />
     <ClCompile Include="cpp\ExerciseDbFileHandler.cpp" />
     <ClCompile Include="ex_db.cpp" />

@@ -1,0 +1,276 @@
+
+#include <iostream>
+#include <locale>  // std::locale, std::tolower
+
+#include "../hpp/ExercideDbUI.h"
+
+
+namespace ExercideDbUI
+{
+	DisplayTagsCommand::DisplayTagsCommand(ExerciseDataApp::ExerciseData* receiver) 
+        : m_dataSource(receiver) 
+    {
+	}
+
+    void DisplayTagsCommand::Execute() const 
+    {
+        std::cout << "List of current tags\n";
+        std::vector<std::string> tags;
+        m_dataSource->GetTagsDb(tags);
+        for (auto tg : tags)
+        {
+            std::cout << tg << std::endl;
+        }
+    }
+
+
+    DisplayExercisesCommand::DisplayExercisesCommand(ExerciseDataApp::ExerciseData* receiver) 
+        : m_dataSource(receiver) 
+    {
+    }
+
+    void DisplayExercisesCommand::Execute() const
+    {
+        std::cout << "List of current exercises \n";
+        std::vector<CoreData::BaseEx> tags;
+        m_dataSource->GetExDb(tags);
+        for (auto tg : tags)
+        {
+            std::cout << tg.exName << std::endl;
+        }
+    }
+
+
+    AddTagsCommand::AddTagsCommand(ExerciseDataApp::ExerciseData* receiver) 
+        : m_dataSource(receiver) 
+    {
+    }
+
+    void AddTagsCommand::Execute() const 
+    {
+        std::string tag = { "" };
+        bool stopAdding = { false };
+        do {
+            std::vector<std::string> tags;
+            m_dataSource->GetTagsDb(tags);
+            for (auto tg : tags)
+            {
+                std::cout << tg << std::endl;
+            }
+            std::cout << "Input new tag - fin tp finish: \n";
+            std::getline(std::cin, tag);
+            if (tag.length() > 0)
+            {
+                if (tag == "fin")
+                {
+                    stopAdding = true;
+                }
+
+                if (!stopAdding)
+                {
+                    if (!m_dataSource->AddTag(tag))
+                    {
+                        std::cout << "tag not added \n";
+                    }
+                }
+                std::cout << "*************************** \n";
+            }
+
+        } while (!stopAdding);
+    };
+
+
+    SaveDbToFileCommand::SaveDbToFileCommand(ExerciseDataApp::ExerciseData* receiver) 
+        : m_dataSource(receiver) 
+    {
+    }
+
+    void SaveDbToFileCommand::Execute() const  
+    {
+        std::cout << "Saving data to file\n";
+        m_dataSource->SaveExerciseDb();
+    }
+
+
+    AddExerciseCommand::AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver) 
+        : m_dataSource(receiver) 
+    {
+    }
+
+    void AddExerciseCommand::Execute() const  {
+
+        try
+        {
+            std::vector<CoreData::BaseEx> exs;
+            m_dataSource->GetExDb(exs);
+
+            for (auto ex : exs)
+            {
+                std::cout << ex.exName << "\n";
+            }
+
+            std::string exercise = { "" };
+            std::cout << "Add exercise name\n";
+            std::cin.clear();
+
+            do
+            {
+                std::getline(std::cin, exercise);
+            } while (exercise.length() == 0);
+
+            std::locale loc;
+            std::string exTag = { "" };
+            for (auto elem : exercise)
+            {
+                char c = std::tolower(elem, loc);
+                if (isalpha(c))
+                {
+                    exTag.append(1, c);
+                }
+            }
+
+            if (exTag == "fin")
+            {
+                return;
+            }
+
+            if (m_dataSource->CheckExerciseExists(exTag))
+            {
+                return;
+            }
+
+            // new exercise - havent finished..
+            CoreData::BaseEx exToAdd = { exTag };
+
+            std::string tag = { "" };
+            bool stopAdding = { false };
+            do {
+                std::cout << "Current tags : \n";
+                std::vector<std::string> tags;
+                m_dataSource->GetTagsDb(tags);
+                for (auto tg : tags)
+                {
+                    std::cout << tg << std::endl;
+                }
+                std::cout << "Input new tag - fin to finish: \n";
+
+                do
+                {
+                    std::getline(std::cin, tag);
+                } while (tag.length() == 0);
+
+                if (tag == "fin")
+                {
+                    stopAdding = true;
+                }
+
+                if (!stopAdding)
+                {
+                    if (!m_dataSource->CheckTagsExists(tag))
+                    {
+                        m_dataSource->AddTag(tag);
+                    }
+
+                    auto it = std::find(exToAdd.exTags.begin(), exToAdd.exTags.end(), tag);
+                    if (it == exToAdd.exTags.end())
+                    {
+                        exToAdd.exTags.push_back(tag);
+                    }
+                }
+
+                std::cout << "*************************** \n";
+
+            } while (!stopAdding);
+            m_dataSource->AddExercise(exToAdd);
+        }
+        catch (...)
+        {
+            std::cout << "Couldn't add exercise \n";
+        }
+    }
+
+
+    Invoker::Invoker(std::shared_ptr<ExerciseDataApp::ExerciseData> receiver) 
+    {
+        m_exDb = std::move(receiver);
+    }
+
+    void Invoker::StartUI() {
+        bool exitMenu = { false };
+        std::cout << "welcome to exercise database - choose your option : \n";
+        int opt = { 0 };
+        std::cout << "1: List Exercises\n";
+        std::cout << "2: List Tags\n";
+        std::cout << "3: Add Tag \n";
+        std::cout << "4: Add Exercise \n";
+        std::cout << "5: save Exercises to file \n";
+        std::cout << "6: Exit \n";
+
+        std::cin >> opt;
+        do {
+
+            do {
+                if ((opt < 1) || (opt > 6))
+                {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                    std::cout << "Invalid Entry - please enter number between 1 & 6\n";
+                    std::cin >> opt;
+                }
+            } while ((opt < 1) || (opt > 6));
+
+            switch (opt)
+            {
+            case 1:
+            {
+                std::unique_ptr<ExercideDbUI::DisplayExercisesCommand> dtc = std::make_unique<ExercideDbUI::DisplayExercisesCommand>(m_exDb.get());
+                dtc->Execute();
+                break;
+            }
+            case 2:
+            {
+                std::unique_ptr<ExercideDbUI::DisplayTagsCommand> dtc = std::make_unique<ExercideDbUI::DisplayTagsCommand>(m_exDb.get());
+                dtc->Execute();
+                break;
+
+            }
+            case 3:
+            {
+                std::unique_ptr<ExercideDbUI::AddTagsCommand> atc = std::make_unique<ExercideDbUI::AddTagsCommand>(m_exDb.get());
+                atc->Execute();
+                break;
+
+            }
+            case 4:
+            {
+                std::unique_ptr<ExercideDbUI::AddExerciseCommand> stc = std::make_unique<ExercideDbUI::AddExerciseCommand>(m_exDb.get());
+                stc->Execute();
+                break;
+
+            }
+            case 5:
+            {
+                std::unique_ptr<ExercideDbUI::SaveDbToFileCommand> stc = std::make_unique<ExercideDbUI::SaveDbToFileCommand>(m_exDb.get());
+                stc->Execute();
+                break;
+
+            }
+            case 6:
+            default:
+            {
+                exitMenu = true;
+                return;
+            }
+            }
+
+            std::cout << "Please Input Next Operation\n";
+            std::cin >> opt;
+
+        } while (!exitMenu);
+
+    }
+
+
+
+}
