@@ -12,37 +12,9 @@
 
 #include <filesystem>
 
-namespace CoreData
-{
-    const std::string filePath = { "../exercisedb/" };
-    const std::string file = { "../exercisedb/exercises.db" };
+#include "hpp/CoreData.h"
 
-    const std::string dataIn = { "{" };
-    const std::string dataOut = { "}" };
-    const std::string lineSep = { "\n" };
 
-    const std::string sepIn = { "(" };
-    const std::string sepOut = { ")" };
-    const std::string exSep = { ":" };
-    const std::string tagSep = { "," };
-
-    const std::string tagBase = { "Exercises" };
-    const std::string tagTags = { "Tags" };
-
-}
-
-/* Data Type : BaseEx
-*  Structure containing exercise name and it's associated tags
-*  Tags here can be considered categories : what kind of workouts
-*  would you associate this exercise with.
-*  ex: the Squat would be associated with "Power" and "General" types 
-*  of workout
-*/
-struct BaseEx
-{
-    std::string exName;
-    std::vector<std::string> exTags;
-};
 
 /* Manipulate the exercise data source 
 *  In the implementation given - to & from a local file
@@ -65,11 +37,13 @@ namespace ExerciseDbHandling
     public:
         virtual bool ReadExDb() = 0;
         virtual bool WriteExDb() = 0;
-        virtual void GetExDb(std::vector<BaseEx>& exDbHandle) = 0;
+        virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle) = 0;
         virtual void GetExTags(std::vector<std::string>& tagsHandle) = 0;
+        virtual void GetWorkoutSection(std::vector<std::string>& tagsHandle) = 0;
 
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags) = 0;
-        virtual void SetExercises(std::unique_ptr<std::vector<BaseEx>> tags) = 0;
+        virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags) = 0;
+        virtual void SetWorkoutSection(std::unique_ptr<std::vector<std::string>> tags) = 0;
 
         virtual ~ExerciseDbHandlerBase() = default;
     };
@@ -81,8 +55,9 @@ namespace ExerciseDbHandling
     */
     class ExerciseDbFileHandler : public ExerciseDbHandlerBase
     {
-        std::unique_ptr<std::vector<BaseEx>> m_exercises;
+        std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
+        std::unique_ptr<std::vector<std::string>> m_workoutSectiontags;
 
     public:
         ExerciseDbFileHandler();
@@ -90,11 +65,13 @@ namespace ExerciseDbHandling
         virtual bool ReadExDb();
         virtual bool WriteExDb();
 
-        virtual void GetExDb(std::vector<BaseEx>& exDbHandle);
+        virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
         virtual void GetExTags(std::vector<std::string>& tagsHandle);
+        virtual void GetWorkoutSection(std::vector<std::string>& tagsHandle);
 
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags);
-        virtual void SetExercises(std::unique_ptr<std::vector<BaseEx>> tags);
+        virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags);
+        virtual void SetWorkoutSection(std::unique_ptr<std::vector<std::string>> tags);
 
         virtual ~ExerciseDbFileHandler() = default;
 
@@ -104,8 +81,10 @@ namespace ExerciseDbHandling
     ExerciseDbFileHandler::ExerciseDbFileHandler()
         :ExerciseDbHandlerBase()
     {
-        m_exercises = std::make_unique< std::vector<BaseEx> >();
+        m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_tags = std::make_unique< std::vector<std::string> >();
+        m_workoutSectiontags = std::make_unique< std::vector<std::string> >();
+
     }
 
 
@@ -132,14 +111,16 @@ namespace ExerciseDbHandling
 
             bool tagsProc = { false };
             bool exProc = { false };
+            bool secProc = { false };
 
             std::string line = { "" };
             std::string ex = { "" };
             std::string tag = { "" };
             std::string allTags = { "" };
 
-            std::vector<BaseEx> tempExcerises;
+            std::vector<CoreData::BaseEx> tempExcerises;
             std::vector<std::string> tempTags;
+            std::vector<std::string> tempSections;
 
             if (fs.is_open())
             {
@@ -149,11 +130,19 @@ namespace ExerciseDbHandling
                     {
                         exProc = true;
                         tagsProc = false;
+                        secProc = false;
                     }
                     else if (line == CoreData::tagTags)
                     {
                         exProc = false;
                         tagsProc = true;
+                        secProc = false;
+                    }
+                    else if (line == CoreData::sectionTags)
+                    {
+                        exProc = false;
+                        tagsProc = false;
+                        secProc = true;
                     }
                     else
                     {
@@ -177,7 +166,7 @@ namespace ExerciseDbHandling
                             }
                         } while (allTags.size() > 0);
 
-                        BaseEx exToAdd = { ex, tagVec };
+                        CoreData::BaseEx exToAdd = { ex, tagVec };
 
                         tempExcerises.push_back(exToAdd);
                     }
@@ -191,6 +180,17 @@ namespace ExerciseDbHandling
                             tempTags.push_back(tag);
                         }
                     }
+                    if ((secProc) && (line.find(CoreData::dataIn) == std::string::npos) && (line.find(CoreData::dataOut) == std::string::npos))
+                    {
+                        if (line != CoreData::sectionTags)
+                        {
+                            size_t cp = line.find(CoreData::tagSep);
+                            std::string tag = line.substr(0, cp);
+
+                            tempSections.push_back(tag);
+                        }
+                    }
+
                 }
                 ret = true;
             }
@@ -198,6 +198,7 @@ namespace ExerciseDbHandling
             using std::begin, std::end;
             m_exercises->insert(end(*m_exercises), begin(tempExcerises), end(tempExcerises));
             m_tags->insert(end(*m_tags), begin(tempTags), end(tempTags));
+            m_workoutSectiontags->insert(end(*m_workoutSectiontags), begin(tempSections), end(tempSections));
 
         }
         catch (...)
@@ -253,6 +254,7 @@ namespace ExerciseDbHandling
             }
             fs << CoreData::dataOut << CoreData::lineSep;
 
+            // exercise tags
             fs << CoreData::dataIn << CoreData::lineSep << CoreData::tagTags << CoreData::lineSep;
 
             dataStr = { "" };
@@ -268,6 +270,24 @@ namespace ExerciseDbHandling
                 fs << CoreData::lineSep;
             }
             fs << CoreData::dataOut;
+
+            // workout sections
+            fs << CoreData::dataIn << CoreData::lineSep << CoreData::sectionTags << CoreData::lineSep;
+
+            dataStr = { "" };
+            size_t numSecTags = { m_workoutSectiontags->size() };
+            for (auto tg : *m_workoutSectiontags.get())
+            {
+                fs << tg;
+                if (numSecTags > 1)
+                {
+                    fs << CoreData::tagSep;
+                }
+                numSecTags--;
+                fs << CoreData::lineSep;
+            }
+            fs << CoreData::dataOut;
+
             ret = true;
         }
         catch (...)
@@ -280,7 +300,7 @@ namespace ExerciseDbHandling
         return ret;
 
     }
-    void ExerciseDbFileHandler::GetExDb(std::vector<BaseEx>& exDbHandle)
+    void ExerciseDbFileHandler::GetExDb(std::vector<CoreData::BaseEx>& exDbHandle)
     {
         exDbHandle = *(m_exercises.get());
     }
@@ -289,14 +309,24 @@ namespace ExerciseDbHandling
         tagsHandle = *(m_tags.get());
     }
 
+    void ExerciseDbFileHandler::GetWorkoutSection(std::vector<std::string>& tagsHandle)
+    {
+        tagsHandle = *(m_workoutSectiontags.get());
+    }
+
     void ExerciseDbFileHandler::SetExTags(std::unique_ptr<std::vector<std::string>> tags)
     {
         m_tags = std::move(tags);
     }
 
-    void ExerciseDbFileHandler::SetExercises(std::unique_ptr<std::vector<BaseEx>> tags)
+    void ExerciseDbFileHandler::SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags)
     {
         m_exercises = std::move(tags);
+    }
+
+    void ExerciseDbFileHandler::SetWorkoutSection(std::unique_ptr<std::vector<std::string>> tags)
+    {
+        m_workoutSectiontags = std::move(tags);
     }
 
 }
@@ -314,8 +344,11 @@ namespace ExerciseDbClass
     class ExerciseDb
     {
     private:
-        std::unique_ptr<std::vector<BaseEx>> m_exercises;
+        std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
+
+        std::unique_ptr<std::vector<std::string>> m_workoutSectiontags;
+
         std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> m_exercisesBase;
 
     public:
@@ -327,13 +360,14 @@ namespace ExerciseDbClass
         ~ExerciseDb() = default;
 
         void GetExTags(std::vector<std::string>& tagsHandle);
-        void GetExDb(std::vector<BaseEx>& exDbHandle);
+        void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
+        void GetWorkoutSection(std::vector<std::string>& tagsHandle);
 
         bool AddTag(std::string tag);
 
         bool CheckExerciseExists(std::string exStr);
         bool CheckTagExists(std::string exStr);
-        bool AddExercise(BaseEx ex);
+        bool AddExercise(CoreData::BaseEx ex);
     };
 
     ExerciseDb::ExerciseDb(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle)
@@ -343,13 +377,15 @@ namespace ExerciseDbClass
 
     bool ExerciseDb::LoadExercisesFromDb()
     {
-        m_exercises = std::make_unique< std::vector<BaseEx> >();
+        m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_tags = std::make_unique< std::vector<std::string> >();
+        m_workoutSectiontags = std::make_unique< std::vector<std::string> >();
 
         bool ret =  m_exercisesBase->ReadExDb();
 
         m_exercisesBase->GetExDb(*(m_exercises.get()));
         m_exercisesBase->GetExTags(*(m_tags.get()));
+        m_exercisesBase->GetWorkoutSection(*(m_workoutSectiontags.get()));
 
         return ret;
     }
@@ -366,7 +402,7 @@ namespace ExerciseDbClass
 
         try 
         {
-            auto it = std::find_if(m_exercises->begin(), m_exercises->end(), [exStr](BaseEx& f) { return f.exName == exStr; });
+            auto it = std::find_if(m_exercises->begin(), m_exercises->end(), [exStr](CoreData::BaseEx& f) { return f.exName == exStr; });
             if (it != m_exercises->end())
             {
                 ret = true;
@@ -399,12 +435,12 @@ namespace ExerciseDbClass
         return ret;
     }
 
-    bool ExerciseDb::AddExercise(BaseEx ex)
+    bool ExerciseDb::AddExercise(CoreData::BaseEx ex)
     {
         m_exercises->push_back(ex);
         m_exercisesBase->SetExercises(std::move(m_exercises));
 
-        m_exercises = std::make_unique< std::vector<BaseEx> >();
+        m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_exercisesBase->GetExDb(*(m_exercises.get()));
 
         return true;
@@ -452,7 +488,12 @@ namespace ExerciseDbClass
         m_exercisesBase->GetExTags(tagsHandle);
     }
 
-    void ExerciseDb::GetExDb(std::vector<BaseEx>& exDbHandle)
+    void ExerciseDb::GetWorkoutSection(std::vector<std::string>& tagsHandle)
+    {
+        m_exercisesBase->GetWorkoutSection(tagsHandle);
+    }
+
+    void ExerciseDb::GetExDb(std::vector<CoreData::BaseEx>& exDbHandle)
     {
         m_exercisesBase->GetExDb(exDbHandle);
     }
@@ -479,13 +520,13 @@ namespace ExerciseDataApp
         bool SaveExerciseDb();
 
         void GetTagsDb(std::vector<std::string>& tags);
-        void GetExDb(std::vector<BaseEx>& dbHandle);
+        void GetExDb(std::vector<CoreData::BaseEx>& dbHandle);
 
         bool AddTag(std::string tag);
 
         bool CheckExerciseExists(std::string ex);
         bool CheckTagsExists(std::string ex);
-        bool AddExercise(BaseEx ex);
+        bool AddExercise(CoreData::BaseEx ex);
     };
 
     ExerciseData::ExerciseData(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle)
@@ -509,7 +550,7 @@ namespace ExerciseDataApp
         m_exDb->GetExTags(tags);
     }
 
-    void ExerciseData::GetExDb(std::vector<BaseEx>& dbHandle)
+    void ExerciseData::GetExDb(std::vector<CoreData::BaseEx>& dbHandle)
     {
         m_exDb->GetExDb(dbHandle);
     }
@@ -519,7 +560,7 @@ namespace ExerciseDataApp
         return m_exDb->AddTag(tag);
     }
 
-    bool ExerciseData::AddExercise(BaseEx ex)
+    bool ExerciseData::AddExercise(CoreData::BaseEx ex)
     {
         return m_exDb->AddExercise(ex);
     }
@@ -586,7 +627,7 @@ namespace ExercideDbUI
          */
         void Execute() const override {
             std::cout << "List of current exercises \n";
-            std::vector<BaseEx> tags;
+            std::vector<CoreData::BaseEx> tags;
             m_dataSource->GetExDb(tags);
             for (auto tg : tags)
             {
@@ -674,7 +715,7 @@ namespace ExercideDbUI
 
             try 
             {
-                std::vector<BaseEx> exs;
+                std::vector<CoreData::BaseEx> exs;
                 m_dataSource->GetExDb(exs);
 
                 for (auto ex : exs)
@@ -713,7 +754,7 @@ namespace ExercideDbUI
                 }
 
                 // new exercise - havent finished..
-                BaseEx exToAdd = { exTag };
+                CoreData::BaseEx exToAdd = { exTag };
 
                 std::string tag = { "" };
                 bool stopAdding = { false };
@@ -884,6 +925,23 @@ namespace ExerciseTemplates
         }
     };
 
+    struct ExDescription
+    {
+        std::string exName;
+        int exSets;
+        int exWeight;
+        int exReps;
+    } ;
+
+    class AddExerciseToSection
+    {
+    private:
+        std::shared_ptr<CoreData::BaseEx> m_exercises;
+        std::unique_ptr<std::vector<ExDescription>> m_userExercises;
+
+    public:
+
+    };
 
 }
 
