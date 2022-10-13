@@ -16,93 +16,10 @@
 #include "hpp/ExerciseDbHandlerBase.h"
 #include "hpp/ExerciseDbFileHandler.h"
 #include "hpp/ExerciseDb.h"
+#include "hpp/ExerciseData.h"
 
 
 
-
-
-/* Wrapper round the exercise data class :
-*  Processes commands
-*  - extract exercise data for display 
-*  - on exercise data addition it ensures: 
-*   no duplicates are stored
-*   updates the stored exercise data
-*/
-
-/* Wrapper round the exercise database :
-*  creates database and handles commands to-
-*  load / initialise the database
-*  handle commands to extract, update & save exercises
-*/
-namespace ExerciseDataApp
-{
-
-    class ExerciseData 
-    {
-    private:
-            std::unique_ptr <ExerciseDbClass::ExerciseDb> m_exDb;
-
-    public:
-        ExerciseData() = default;
-        ExerciseData(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle);
-        bool InitialiseExerciseDb();
-        bool SaveExerciseDb();
-
-        void GetTagsDb(std::vector<std::string>& tags);
-        void GetExDb(std::vector<CoreData::BaseEx>& dbHandle);
-
-        bool AddTag(std::string tag);
-
-        bool CheckExerciseExists(std::string ex);
-        bool CheckTagsExists(std::string ex);
-        bool AddExercise(CoreData::BaseEx ex);
-    };
-
-    ExerciseData::ExerciseData(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle)
-    {
-        std::unique_ptr<ExerciseDbClass::ExerciseDb> db = std::make_unique<ExerciseDbClass::ExerciseDb>(std::move(dbHandle));
-        m_exDb = std::move(db);
-    }
-
-    bool ExerciseData::InitialiseExerciseDb()
-    {
-        return m_exDb->LoadExercisesFromDb();
-    }
-
-    bool ExerciseData::SaveExerciseDb()
-    {
-        return m_exDb->BackupExercsesToDb();
-    }
-
-    void ExerciseData::GetTagsDb(std::vector<std::string>& tags)
-    {
-        m_exDb->GetExTags(tags);
-    }
-
-    void ExerciseData::GetExDb(std::vector<CoreData::BaseEx>& dbHandle)
-    {
-        m_exDb->GetExDb(dbHandle);
-    }
-
-    bool ExerciseData::AddTag(std::string tag)
-    {
-        return m_exDb->AddTag(tag);
-    }
-
-    bool ExerciseData::AddExercise(CoreData::BaseEx ex)
-    {
-        return m_exDb->AddExercise(ex);
-    }
-
-    bool ExerciseData::CheckExerciseExists(std::string ex)
-    {
-        return m_exDb->CheckExerciseExists(ex);
-    }
-    bool ExerciseData::CheckTagsExists(std::string ex)
-    {
-        return m_exDb->CheckTagExists(ex);
-    }
-}
 
 /* Creates Application "UI"
 *  all commands to interact with exercise database

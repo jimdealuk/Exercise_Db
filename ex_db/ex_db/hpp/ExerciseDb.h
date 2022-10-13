@@ -9,7 +9,13 @@
 
 namespace ExerciseDbClass
 {
-
+    /* Wrapper round the exercise data class :
+    *  Processes commands
+    *  - extract exercise data for display
+    *  - on exercise data addition it ensures:
+    *   no duplicates are stored
+    *   updates the stored exercise data
+    */
     class ExerciseDb
     {
     private:
