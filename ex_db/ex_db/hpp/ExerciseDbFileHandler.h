@@ -1,9 +1,12 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
+
 #ifndef ExerciseDbFileHandler_H
 #define ExerciseDbFileHandler_H
 
 #include <vector>
 
 #include "CoreData.h"
+
 #include "ExerciseDbHandlerBase.h"
 
 /* Manipulate the exercise data source

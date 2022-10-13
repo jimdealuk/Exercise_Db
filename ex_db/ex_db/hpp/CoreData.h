@@ -1,3 +1,5 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
+
 #ifndef CoreData_H
 #define CoreData_H
 

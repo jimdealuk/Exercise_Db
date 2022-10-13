@@ -1,3 +1,5 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
+
 #ifndef ExerciseData_H
 #define ExerciseData_H
 

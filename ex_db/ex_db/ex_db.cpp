@@ -1,5 +1,4 @@
-// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
 
 #include <iostream>
 #include <fstream>

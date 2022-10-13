@@ -1,3 +1,5 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
+
 #ifndef ExerciseDbHandling_H
 #define ExerciseDbHandling_H
 
@@ -41,7 +43,7 @@ namespace ExerciseDbClass
         // get a copy of the exercise, tag and sections containers
         void GetExTags(std::vector<std::string>& tagsHandle);
         void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
-        void GetWorkoutSection(std::vector<std::string>& tagsHandle);
+        void GetWorkoutSection(std::vector<std::string>& exHandle);
 
         // Add a new tag to the tags database
         bool AddTag(std::string tag);

@@ -1,3 +1,4 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
 
 #include <iostream>
 #include <locale>  // std::locale, std::tolower
@@ -12,6 +13,9 @@ namespace ExercideDbUI
     {
 	}
 
+    /* Command to list all the tags in the tags container 
+    *  taken from the exercise database
+    */
     void DisplayTagsCommand::Execute() const 
     {
         std::cout << "List of current tags\n";
@@ -29,6 +33,9 @@ namespace ExercideDbUI
     {
     }
 
+    /* Command to list all the exercises in the exercises container
+    *  taken from the exercise database
+    */
     void DisplayExercisesCommand::Execute() const
     {
         std::cout << "List of current exercises \n";
@@ -46,7 +53,9 @@ namespace ExercideDbUI
     {
     }
 
-    void AddTagsCommand::Execute() const 
+    /* Command to add tags in the tags container
+    */
+    void AddTagsCommand::Execute() const
     {
         std::string tag = { "" };
         bool stopAdding = { false };
@@ -85,18 +94,23 @@ namespace ExercideDbUI
     {
     }
 
-    void SaveDbToFileCommand::Execute() const  
+    /* Command to save the tags, exercises and sections
+    * to the storage mechanism - from where they were loaded
+    */
+    void SaveDbToFileCommand::Execute() const
     {
         std::cout << "Saving data to file\n";
         m_dataSource->SaveExerciseDb();
     }
 
 
-    AddExerciseCommand::AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver) 
+    AddExerciseCommand::AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver)
         : m_dataSource(receiver) 
     {
     }
 
+    /* Command to add an exercise in the exercise container
+    */
     void AddExerciseCommand::Execute() const  {
 
         try
@@ -195,6 +209,9 @@ namespace ExercideDbUI
         m_exDb = std::move(receiver);
     }
 
+    /* Method to create and start the UI
+    *  As an option is selected, the relevant command is created and executed
+    */
     void Invoker::StartUI() {
         bool exitMenu = { false };
         std::cout << "welcome to exercise database - choose your option : \n";
@@ -268,9 +285,5 @@ namespace ExercideDbUI
             std::cin >> opt;
 
         } while (!exitMenu);
-
     }
-
-
-
 }

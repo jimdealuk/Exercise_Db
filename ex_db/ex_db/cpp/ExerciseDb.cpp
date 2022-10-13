@@ -1,3 +1,4 @@
+// File associated with the Exercise_Db project of https://github.com/jimdealuk/
 
 #include <locale>  // std::locale, std::tolower
 
@@ -6,12 +7,19 @@
 
 namespace ExerciseDbClass
 {
-
+    /* ExerciseDb constructor
+    *  pass in db handle and use it to set the class db handle
+    */
     ExerciseDb::ExerciseDb(std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle)
     {
         m_exercisesBase = std::move(dbHandle);
     }
 
+    /* LoadExercisesFromDb
+    *  create the exercise, tags and sections containers
+    *  read the data in to the database
+    *  populate the exercise, tags and sections containers from the database
+    */
     bool ExerciseDb::LoadExercisesFromDb()
     {
         m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
@@ -27,12 +35,18 @@ namespace ExerciseDbClass
         return ret;
     }
 
+    /* BackupExercsesToDb
+    *  Call relevant method on database handle to write all the data to 
+    *  the relevant storage mechanism
+    */
     bool ExerciseDb::BackupExercsesToDb()
     {
         return m_exercisesBase->WriteExDb();
     }
 
-
+    /* CheckExerciseExists
+    *  Check to see if an exercise already exists
+    */
     bool ExerciseDb::CheckExerciseExists(std::string exStr)
     {
         bool ret = { false };
@@ -53,6 +67,9 @@ namespace ExerciseDbClass
         return ret;
     }
 
+    /* CheckTagExists
+    *  Check to see if an tag already exists
+    */
     bool ExerciseDb::CheckTagExists(std::string exStr)
     {
         bool ret = { false };
@@ -72,6 +89,16 @@ namespace ExerciseDbClass
         return ret;
     }
 
+    /* AddExercise
+    *  Add an exercise to the exercise container
+    *  Replace the exercise container in the database
+    *  to ensure consistency with the database replace current
+    *  exercise container with the one in the database
+    *  NOTE: it is NOT anticipated that there will be millions of
+    *  exercises in the exercise database : if there were this may be
+    *  a heavy handed approach to esuring consistency of data between
+    *  the database and the rest of the application
+    */
     bool ExerciseDb::AddExercise(CoreData::BaseEx ex)
     {
         m_exercises->push_back(ex);
@@ -83,6 +110,16 @@ namespace ExerciseDbClass
         return true;
     }
 
+    /* AddTag
+    *  Add an tag to the tags container
+    *  Replace the tags container in the database
+    *  to ensure consistency with the database replace current
+    *  tag container with the one in the database
+    *  NOTE: it is NOT anticipated that there will be millions of
+    *  tags in the tags database : if there were this may be
+    *  a heavy handed approach to esuring consistency of data between
+    *  the database and the rest of the application
+    */
     bool ExerciseDb::AddTag(std::string tag)
     {
         bool ret = { false };
@@ -120,16 +157,19 @@ namespace ExerciseDbClass
         return ret;
     }
 
+    // set reference to tags container from the tags container in the database
     void ExerciseDb::GetExTags(std::vector<std::string>& tagsHandle)
     {
         m_exercisesBase->GetExTags(tagsHandle);
     }
 
-    void ExerciseDb::GetWorkoutSection(std::vector<std::string>& tagsHandle)
+    // set reference to exercise container from the exercise container in the database
+    void ExerciseDb::GetWorkoutSection(std::vector<std::string>& exHandle)
     {
-        m_exercisesBase->GetWorkoutSection(tagsHandle);
+        m_exercisesBase->GetWorkoutSection(exHandle);
     }
 
+    // set reference to sections container from the sections container in the database
     void ExerciseDb::GetExDb(std::vector<CoreData::BaseEx>& exDbHandle)
     {
         m_exercisesBase->GetExDb(exDbHandle);
