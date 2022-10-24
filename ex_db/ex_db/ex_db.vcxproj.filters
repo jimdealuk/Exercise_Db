@@ -24,9 +24,6 @@
     <ClCompile Include="cpp\ExerciseDb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cpp\ExerciseData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cpp\ExercideDbUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="hpp\ExerciseDb.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hpp\ExerciseData.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="hpp\ExercideDbUI.h">

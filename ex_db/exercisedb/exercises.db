@@ -11,6 +11,7 @@ Exercises
 (lunge:power)
 (ball:power,5)
 (band:general)
+(grip:grip)
 }
 {
 Tags
@@ -21,7 +22,9 @@ builder,
 rowing,
 arm,
 ,
-ball
+ball,
+blabla,
+grip
 }{
 Sections
 warmup,

@@ -3,7 +3,7 @@
 #ifndef ExercideDbUI_H
 #define ExercideDbUI_H
 
-#include "../hpp/ExerciseData.h"
+#include "ExerciseDb.h"
 
 /* Creates Application "UI"
 *  all commands to interact with exercise database
@@ -30,10 +30,10 @@ namespace ExercideDbUI
     class DisplayTagsCommand : public Command {
 
     private:
-        ExerciseDataApp::ExerciseData* m_dataSource;
+        ExerciseDbClass::ExerciseDb* m_dataSource;
 
     public:
-        DisplayTagsCommand(ExerciseDataApp::ExerciseData* receiver);
+        DisplayTagsCommand(ExerciseDbClass::ExerciseDb* receiver);
         void Execute() const override;
     };
 
@@ -44,10 +44,10 @@ namespace ExercideDbUI
     class DisplayExercisesCommand : public Command {
 
     private:
-        ExerciseDataApp::ExerciseData* m_dataSource;
+        ExerciseDbClass::ExerciseDb* m_dataSource;
 
     public:
-        DisplayExercisesCommand(ExerciseDataApp::ExerciseData* receiver);
+        DisplayExercisesCommand(ExerciseDbClass::ExerciseDb* receiver);
         void Execute() const override;
     };
 
@@ -58,10 +58,10 @@ namespace ExercideDbUI
     class AddTagsCommand : public Command {
 
     private:
-        ExerciseDataApp::ExerciseData* m_dataSource;
+        ExerciseDbClass::ExerciseDb* m_dataSource;
 
     public:
-        AddTagsCommand(ExerciseDataApp::ExerciseData* receiver);
+        AddTagsCommand(ExerciseDbClass::ExerciseDb* receiver);
         void Execute() const override;
     };
 
@@ -73,10 +73,10 @@ namespace ExercideDbUI
     class SaveDbToFileCommand : public Command {
 
     private:
-        ExerciseDataApp::ExerciseData* m_dataSource;
+        ExerciseDbClass::ExerciseDb* m_dataSource;
 
     public:
-        SaveDbToFileCommand(ExerciseDataApp::ExerciseData* receiver);
+        SaveDbToFileCommand(ExerciseDbClass::ExerciseDb* receiver);
         void Execute() const override;
     };
 
@@ -87,10 +87,10 @@ namespace ExercideDbUI
     class AddExerciseCommand : public Command {
 
     private:
-        ExerciseDataApp::ExerciseData* m_dataSource;
+        ExerciseDbClass::ExerciseDb* m_dataSource;
 
     public:
-        AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver);
+        AddExerciseCommand(ExerciseDbClass::ExerciseDb* receiver);
         void Execute() const override;
     };
 
@@ -103,12 +103,12 @@ namespace ExercideDbUI
     *  In order to do this it creates and executes the relevant commands
     */
     class Invoker {
-        std::shared_ptr <ExerciseDataApp::ExerciseData> m_exDb;
+        std::shared_ptr <ExerciseDbClass::ExerciseDb> m_exDb;
 
     public:
         Invoker() = default;
         Invoker(Invoker& inv) = delete;
-        Invoker(std::shared_ptr<ExerciseDataApp::ExerciseData> receiver);
+        Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver);
 
         void StartUI();
     };

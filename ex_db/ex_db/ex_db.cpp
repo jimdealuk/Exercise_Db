@@ -15,7 +15,7 @@
 #include "hpp/ExerciseDbHandlerBase.h"
 #include "hpp/ExerciseDbFileHandler.h"
 #include "hpp/ExerciseDb.h"
-#include "hpp/ExerciseData.h"
+//#include "hpp/ExerciseData.h"
 #include "hpp/ExercideDbUI.h"
 
 
@@ -67,15 +67,15 @@ int main()
     std::unique_ptr<ExerciseDbHandling::ExerciseDbHandlerBase> exh = std::make_unique<ExerciseDbHandling::ExerciseDbFileHandler>();
     if (exh)
     {
-        std::unique_ptr<ExerciseDataApp::ExerciseData> db = std::make_unique< ExerciseDataApp::ExerciseData>(std::move(exh));
+        std::unique_ptr<ExerciseDbClass::ExerciseDb> db = std::make_unique< ExerciseDbClass::ExerciseDb>(std::move(exh));
 
         if (db)
         {
-            std::shared_ptr<ExerciseDataApp::ExerciseData> dbShared = std::move(db);
+            std::shared_ptr<ExerciseDbClass::ExerciseDb> dbShared = std::move(db);
 
             if(dbShared)
             {
-                dbShared->InitialiseExerciseDb();
+                dbShared->LoadExercisesFromDb();
 
                 std::unique_ptr<ExercideDbUI::Invoker> ui = std::make_unique < ExercideDbUI::Invoker>(dbShared);
                 if (ui)

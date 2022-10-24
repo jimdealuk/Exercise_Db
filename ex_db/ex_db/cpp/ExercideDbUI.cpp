@@ -5,10 +5,9 @@
 
 #include "../hpp/ExercideDbUI.h"
 
-
 namespace ExercideDbUI
 {
-	DisplayTagsCommand::DisplayTagsCommand(ExerciseDataApp::ExerciseData* receiver) 
+	DisplayTagsCommand::DisplayTagsCommand(ExerciseDbClass::ExerciseDb* receiver) 
         : m_dataSource(receiver) 
     {
 	}
@@ -20,7 +19,7 @@ namespace ExercideDbUI
     {
         std::cout << "List of current tags\n";
         std::vector<std::string> tags;
-        m_dataSource->GetTagsDb(tags);
+        m_dataSource->GetExTags(tags);
         for (auto tg : tags)
         {
             std::cout << tg << std::endl;
@@ -28,7 +27,7 @@ namespace ExercideDbUI
     }
 
 
-    DisplayExercisesCommand::DisplayExercisesCommand(ExerciseDataApp::ExerciseData* receiver) 
+    DisplayExercisesCommand::DisplayExercisesCommand(ExerciseDbClass::ExerciseDb* receiver) 
         : m_dataSource(receiver) 
     {
     }
@@ -48,7 +47,7 @@ namespace ExercideDbUI
     }
 
 
-    AddTagsCommand::AddTagsCommand(ExerciseDataApp::ExerciseData* receiver) 
+    AddTagsCommand::AddTagsCommand(ExerciseDbClass::ExerciseDb* receiver) 
         : m_dataSource(receiver) 
     {
     }
@@ -61,7 +60,7 @@ namespace ExercideDbUI
         bool stopAdding = { false };
         do {
             std::vector<std::string> tags;
-            m_dataSource->GetTagsDb(tags);
+            m_dataSource->GetExTags(tags);
             for (auto tg : tags)
             {
                 std::cout << tg << std::endl;
@@ -89,7 +88,7 @@ namespace ExercideDbUI
     };
 
 
-    SaveDbToFileCommand::SaveDbToFileCommand(ExerciseDataApp::ExerciseData* receiver) 
+    SaveDbToFileCommand::SaveDbToFileCommand(ExerciseDbClass::ExerciseDb* receiver) 
         : m_dataSource(receiver) 
     {
     }
@@ -100,11 +99,11 @@ namespace ExercideDbUI
     void SaveDbToFileCommand::Execute() const
     {
         std::cout << "Saving data to file\n";
-        m_dataSource->SaveExerciseDb();
+        m_dataSource->BackupExercsesToDb();
     }
 
 
-    AddExerciseCommand::AddExerciseCommand(ExerciseDataApp::ExerciseData* receiver)
+    AddExerciseCommand::AddExerciseCommand(ExerciseDbClass::ExerciseDb* receiver)
         : m_dataSource(receiver) 
     {
     }
@@ -161,7 +160,7 @@ namespace ExercideDbUI
             do {
                 std::cout << "Current tags : \n";
                 std::vector<std::string> tags;
-                m_dataSource->GetTagsDb(tags);
+                m_dataSource->GetExTags(tags);
                 for (auto tg : tags)
                 {
                     std::cout << tg << std::endl;
@@ -180,7 +179,7 @@ namespace ExercideDbUI
 
                 if (!stopAdding)
                 {
-                    if (!m_dataSource->CheckTagsExists(tag))
+                    if (!m_dataSource->CheckTagExists(tag))
                     {
                         m_dataSource->AddTag(tag);
                     }
@@ -204,7 +203,7 @@ namespace ExercideDbUI
     }
 
 
-    Invoker::Invoker(std::shared_ptr<ExerciseDataApp::ExerciseData> receiver) 
+    Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver) 
     {
         m_exDb = std::move(receiver);
     }
