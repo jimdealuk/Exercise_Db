@@ -15,8 +15,7 @@
 #include "hpp/ExerciseDbHandlerBase.h"
 #include "hpp/ExerciseDbFileHandler.h"
 #include "hpp/ExerciseDb.h"
-//#include "hpp/ExerciseData.h"
-#include "hpp/ExercideDbUI.h"
+#include "hpp/ExerciseDbUI.h"
 
 
 namespace ExerciseTemplates

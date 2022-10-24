@@ -3,7 +3,7 @@
 #include <iostream>
 #include <locale>  // std::locale, std::tolower
 
-#include "../hpp/ExercideDbUI.h"
+#include "../hpp/ExerciseDbUI.h"
 
 namespace ExercideDbUI
 {

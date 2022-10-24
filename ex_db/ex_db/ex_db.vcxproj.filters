@@ -24,7 +24,7 @@
     <ClCompile Include="cpp\ExerciseDb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cpp\ExercideDbUI.cpp">
+    <ClCompile Include="cpp\ExerciseDbUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="hpp\ExerciseDb.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="hpp\ExercideDbUI.h">
+    <ClInclude Include="hpp\ExerciseDbUI.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
