@@ -136,7 +136,10 @@ namespace ExerciseDbHandling
                         {
                             size_t cpI = line.find(CoreData::sepIn);
                             size_t cpO = line.find(CoreData::exSep);
-                            std::string name = line.substr(cpI+1, cpO-1); // get name
+                            std::string name = line.substr(cpI+1, cpO-1); // get 
+
+                            // TODO - extend for multiple workouts
+
                             // create name workout
                             CoreData::Workout workout = { name };
 
@@ -149,51 +152,19 @@ namespace ExerciseDbHandling
                             {
                                 line = line.erase(0, cpI + 1); // remove "Section:(" from string
 
-                                // WIP - go & get exercises from sections string
                                 size_t exI = line.find(CoreData::exIn);
                                 size_t exO = line.find(CoreData::exOut);
 
                                 std::string section = {""};
-                                
-                                do {
-                                    // remove the current section
-                                    size_t endSec = line.find(CoreData::exOut);
 
-                                    // get section
-                                    section = line.substr(0, endSec +1);
+                                std::vector<CoreData::WorkoutSection> sections;
+                                ReadSectionFromWorkout(line, sections);
 
-                                    // get section name
-                                    size_t secNameEnd = section.find(CoreData::exSep);
-                                    std::string secName = section.substr(1, secNameEnd-1 );
-
-                                    CoreData::WorkoutSection sectionStore;
-                                    sectionStore.name = secName;
-
-                                    size_t en = section.size() - secNameEnd;
-                                    std::string exs = section.substr(secNameEnd+1, en-2);
-
-                                    do {
-                                        size_t exEnd = exs.find(CoreData::sepOut);
-                                        std::string ex = exs.substr(1, exEnd-1);
-                                        exs = exs.erase(0, (exEnd + 1));
-
-                                        CoreData::ExDescription exd = { ex };
-                                        sectionStore.excercises.push_back(exd);
-                                    } while (exs.size() > 0);
-
-                                    // remove the current section
-                                    endSec = line.find(CoreData::exOut);
-                                    line = line.erase(0, (endSec+1)); 
-
-                                    exO = line.find(CoreData::exOut);
-
-                                    workout.sections.push_back(sectionStore);
-                                } while (exO != std::string::npos);
+                                workout.sections = sections;                                
                             }
                             tempWorkouts.push_back(workout);
                         }
                     }
-
                 }
                 // if we're here - the exercise data *should* have been read in to the relevant container
                 ret = true;
@@ -213,6 +184,85 @@ namespace ExerciseDbHandling
         fs.close();
         return ret;
     }
+
+    bool ExerciseDbFileHandler::ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections)
+    {
+        bool ret = { false };
+        std::string section = { "" };
+
+        try
+        {
+            size_t exO = sectionStr.find(CoreData::exOut);
+
+            do {
+                // remove the current section
+                size_t endSec = sectionStr.find(CoreData::exOut);
+
+                // get section
+                section = sectionStr.substr(0, endSec + 1);
+
+                // get section name
+                size_t secNameEnd = section.find(CoreData::exSep);
+                std::string secName = section.substr(1, secNameEnd - 1);
+
+                CoreData::WorkoutSection sectionStore;
+                sectionStore.name = secName;
+
+                size_t en = section.size() - secNameEnd;
+                std::string exs = section.substr(secNameEnd + 1, en - 2);
+
+                std::vector<CoreData::ExDescription> exercises;
+                if (!ReadExercisesFromSection(exs, exercises))
+                {
+                    throw "Bad Exercises";
+                }
+
+                // insert the exercises in this section
+                sectionStore.excercises.insert(end(sectionStore.excercises), begin(exercises), end(exercises));
+
+                // remove the current section
+                endSec = sectionStr.find(CoreData::exOut);
+                sectionStr = sectionStr.erase(0, (endSec + 1));
+
+                exO = sectionStr.find(CoreData::exOut);
+
+                sections.push_back(sectionStore);
+            } while (exO != std::string::npos);
+
+        }
+        catch (...)
+        {
+            //false already set :: TODO - this may falsely look like a reading sections problem
+        }
+
+        return ret;
+    }
+
+
+    bool ExerciseDbFileHandler::ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises)
+    {
+        bool ret = { false };
+        try
+        {
+            do {
+                size_t exEnd = sectionStr.find(CoreData::sepOut);
+                std::string ex = sectionStr.substr(1, exEnd - 1);
+                sectionStr = sectionStr.erase(0, (exEnd + 1));
+
+                CoreData::ExDescription exd = { ex };
+                exercises.push_back(exd);
+            } while (sectionStr.size() > 0);
+            ret = true;
+        }
+        catch (...)
+        {
+            // return already set to false
+        }
+
+        return ret;
+    }
+
+
 
     /* WriteExDb 
     *  Write the exerce, tag and section data from their relevant containers
@@ -318,10 +368,12 @@ namespace ExerciseDbHandling
                     }
 
                     fs << CoreData::exOut;// (<name>:(Section:[(<ex>]
-                }
 
+                }
                 fs << CoreData::sepOut; // (<name>:(Section:[  ])
                 fs << CoreData::sepOut; // (<name>:(Section:[  ]))
+                fs << CoreData::lineSep;
+
             }
             fs << CoreData::lineSep;
             fs << CoreData::dataOut;

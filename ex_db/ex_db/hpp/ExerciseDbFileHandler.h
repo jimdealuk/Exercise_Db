@@ -31,6 +31,11 @@ namespace ExerciseDbHandling
         std::unique_ptr<std::vector<std::string>> m_tags;
         std::unique_ptr<std::vector<CoreData::Workout>> m_workouts;
 
+        bool ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises);
+        bool ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections);
+
+
+
     public:
         ExerciseDbFileHandler();
         ExerciseDbFileHandler(ExerciseDbFileHandler& exDb) = delete;
