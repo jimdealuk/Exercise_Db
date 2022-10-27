@@ -29,7 +29,7 @@ namespace ExerciseDbHandling
         // exercises database
         std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
-        std::unique_ptr<std::vector<std::string>> m_workoutSectiontags;
+        std::unique_ptr<std::vector<CoreData::Workout>> m_workouts;
 
     public:
         ExerciseDbFileHandler();
@@ -42,12 +42,12 @@ namespace ExerciseDbHandling
         // Get the exercises, tags and section containers from the database
         virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
         virtual void GetExTags(std::vector<std::string>& tagsHandle);
-        virtual void GetWorkoutSection(std::vector<std::string>& tagsHandle);
+        virtual void GetWorkout(std::vector<CoreData::Workout>& tagsHandle);
 
         // Set the exercises, tags and section containers in the database
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags);
         virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags);
-        virtual void SetWorkoutSection(std::unique_ptr<std::vector<std::string>> tags);
+        virtual void SetWorkout(std::unique_ptr<std::vector<CoreData::Workout>> tags);
 
 
     };

@@ -12,18 +12,24 @@ namespace CoreData
     const std::string filePath = { "../exercisedb/" };
     const std::string file = { "../exercisedb/exercises.db" };
 
+    const std::string tempfile = { "../exercisedb/tempexercises.db" };
+
+
     const std::string dataIn = { "{" };
     const std::string dataOut = { "}" };
     const std::string lineSep = { "\n" };
 
     const std::string sepIn = { "(" };
     const std::string sepOut = { ")" };
+    const std::string exIn = { "[" };
+    const std::string exOut = { "]" };
     const std::string exSep = { ":" };
     const std::string tagSep = { "," };
 
     const std::string tagBase = { "Exercises" };
     const std::string tagTags = { "Tags" };
-    const std::string sectionTags = { "Sections" };
+    const std::string sectionTags = { "Section" };
+    const std::string workoutTags = { "Workouts" };
 
     /* Data Type : BaseEx
     *  Structure containing exercise name and it's associated tags
@@ -38,20 +44,69 @@ namespace CoreData
         std::vector<std::string> exTags;
     };
 
+
     /* Data Type : ExDescription
-    *  Structure containing exercise name and the 
-    *  weight to be used
-    *  number of repetitions
-    *  number of sets
+    *  Structure containing exercise name
     */
     struct ExDescription
     {
         std::string exName;
-        int exSets;
-        int exWeight;
-        int exReps;
     };
 
+    /* Data Type : WeightExercise
+    *  Structure containing exercise name add
+    *  weight to be used
+    *  number of repetitions
+    *  number of sets
+    */
+    struct WeightExercise : ExDescription
+    {
+        int exSets = 0;
+        int exWeight = 0;
+        int exReps = 0;
+    };
+
+    /* Data Type : RowExercise
+    *  Structure containing exercise name add
+    *  distance : distance to be rowed
+    *  time : duration of exercise
+    *  difficulty : at the moment - an integer (range unspecified)
+    */
+    struct RowExercise : ExDescription
+    {
+        int distanceInKm = 0;
+        int timeInMins = 0;
+        int difficulty = 0;
+    };
+
+
+    /* Data Type : WorkoutSection
+    *  Structure containing section name and
+    *  exercises contained in this section
+    */
+    struct WorkoutSection {
+        std::string name = { "" };
+        std::vector<ExDescription> excercises;
+    };
+
+    /* Data Type : Workout
+    *  Structure containing Workout name and
+    *  sections contained in this workout
+    */
+    struct Workout {
+        std::string name = { "" };
+        std::vector<WorkoutSection> sections;
+    };
+
+    /* Data Type : QuickWorkout
+    *  This structure may be used for a rehab program that does not require sections
+    *  Structure containing Workout name and
+    *  exercises contained in this workout
+    */
+    struct QuickWorkout {
+        std::string name = { "" };
+        std::vector<ExDescription> excercises;
+    };
 
 
 }

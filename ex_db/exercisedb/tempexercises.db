@@ -6,7 +6,6 @@ Exercises
 (press:power,builder)
 (curl:builder)
 (row:row)
-(cycle:cycling)
 }
 {
 Tags
@@ -14,8 +13,7 @@ power,
 general,
 govt,
 builder,
-row,
-cycling
+row
 }
 {
 Workouts

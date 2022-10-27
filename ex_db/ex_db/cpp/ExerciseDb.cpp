@@ -24,13 +24,13 @@ namespace ExerciseDbClass
     {
         m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_tags = std::make_unique< std::vector<std::string> >();
-        m_workoutSectiontags = std::make_unique< std::vector<std::string> >();
+        m_workout = std::make_unique<std::vector<CoreData::Workout>>();
 
         bool ret = m_exercisesBase->ReadExDb();
 
         m_exercisesBase->GetExDb(*(m_exercises.get()));
         m_exercisesBase->GetExTags(*(m_tags.get()));
-        m_exercisesBase->GetWorkoutSection(*(m_workoutSectiontags.get()));
+        m_exercisesBase->GetWorkout(*(m_workout.get()));
 
         return ret;
     }
@@ -164,9 +164,9 @@ namespace ExerciseDbClass
     }
 
     // set reference to exercise container from the exercise container in the database
-    void ExerciseDb::GetWorkoutSection(std::vector<std::string>& exHandle)
+    void ExerciseDb::GetWorkout(std::vector<CoreData::Workout>& exHandle)
     {
-        m_exercisesBase->GetWorkoutSection(exHandle);
+        m_exercisesBase->GetWorkout(exHandle);
     }
 
     // set reference to sections container from the sections container in the database

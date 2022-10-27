@@ -5,11 +5,17 @@ Exercises
 (clean:power,govt)
 (press:power,builder)
 (curl:builder)
+(row:row)
 }
 {
 Tags
 power,
 general,
 govt,
-builder
+builder,
+row
+}
+{
+Workouts
+(Jim:(Section:[Warmup:(cycle)][Main:(press)(deadlift)(curl)] ) )
 }
