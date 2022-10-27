@@ -108,7 +108,6 @@ namespace CoreData
         std::vector<ExDescription> excercises;
     };
 
-
 }
 
 #endif /* !CoreData_H */

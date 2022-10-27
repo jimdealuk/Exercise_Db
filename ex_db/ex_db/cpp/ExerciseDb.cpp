@@ -47,7 +47,7 @@ namespace ExerciseDbClass
     /* CheckExerciseExists
     *  Check to see if an exercise already exists
     */
-    bool ExerciseDb::CheckExerciseExists(std::string exStr)
+    bool ExerciseDb::CheckExerciseExists(const std::string& exStr)
     {
         bool ret = { false };
 
@@ -70,7 +70,7 @@ namespace ExerciseDbClass
     /* CheckTagExists
     *  Check to see if an tag already exists
     */
-    bool ExerciseDb::CheckTagExists(std::string exStr)
+    bool ExerciseDb::CheckTagExists(const std::string& exStr)
     {
         bool ret = { false };
 
@@ -99,7 +99,7 @@ namespace ExerciseDbClass
     *  a heavy handed approach to esuring consistency of data between
     *  the database and the rest of the application
     */
-    bool ExerciseDb::AddExercise(CoreData::BaseEx ex)
+    bool ExerciseDb::AddExercise(const CoreData::BaseEx& ex)
     {
         m_exercises->push_back(ex);
         m_exercisesBase->SetExercises(std::move(m_exercises));
@@ -120,7 +120,7 @@ namespace ExerciseDbClass
     *  a heavy handed approach to esuring consistency of data between
     *  the database and the rest of the application
     */
-    bool ExerciseDb::AddTag(std::string tag)
+    bool ExerciseDb::AddTag(const std::string& tag)
     {
         bool ret = { false };
 

@@ -155,7 +155,6 @@ namespace ExerciseDbHandling
 
                                 std::string section = {""};
                                 
-
                                 do {
                                     // remove the current section
                                     size_t endSec = line.find(CoreData::exOut);
@@ -179,13 +178,8 @@ namespace ExerciseDbHandling
                                         exs = exs.erase(0, (exEnd + 1));
 
                                         CoreData::ExDescription exd = { ex };
-
                                         sectionStore.excercises.push_back(exd);
-
-
                                     } while (exs.size() > 0);
-
-
 
                                     // remove the current section
                                     endSec = line.find(CoreData::exOut);
@@ -250,7 +244,7 @@ namespace ExerciseDbHandling
 
             std::string dataStr = { "" };
 
-            for (auto ex : *m_exercises.get())
+            for (auto& ex : *m_exercises.get())
             {
                 fs << CoreData::sepIn;
                 dataStr = ex.exName;
@@ -275,7 +269,7 @@ namespace ExerciseDbHandling
 
             dataStr = { "" };
             size_t numTagsTags = { m_tags->size() };
-            for (auto tg : *m_tags.get())
+            for (auto& tg : *m_tags.get())
             {
                 fs << tg;
                 if (numTagsTags > 1)
@@ -294,7 +288,7 @@ namespace ExerciseDbHandling
             dataStr = { "" };
 
             size_t numWorkoutsTags = { m_workouts->size() };
-            for (auto wo : *m_workouts.get())
+            for (auto& wo : *m_workouts.get())
             {
                 fs << CoreData::sepIn; // (
                 dataStr = wo.name;
@@ -304,11 +298,10 @@ namespace ExerciseDbHandling
                 fs << CoreData::sectionTags; // (<name>:(Section
                 fs << CoreData::exSep; // (<name>:(Section:
 
-
                 std::vector<CoreData::WorkoutSection> woSec = wo.sections;
                 std::string secName = { "" };
                 size_t numSections = { woSec.size() };
-                for (auto ws : woSec)
+                for (auto& ws : woSec)
                 {
                     fs << CoreData::exIn; // (<name>:(Section:[
                     secName = ws.name;
@@ -320,19 +313,15 @@ namespace ExerciseDbHandling
                     for (auto ex : exs)
                     {
                         fs << CoreData::sepIn;
-
                         fs << ex.exName;
-
                         fs << CoreData::sepOut;
                     }
 
                     fs << CoreData::exOut;// (<name>:(Section:[(<ex>]
-
                 }
 
                 fs << CoreData::sepOut; // (<name>:(Section:[  ])
                 fs << CoreData::sepOut; // (<name>:(Section:[  ]))
-
             }
             fs << CoreData::lineSep;
             fs << CoreData::dataOut;

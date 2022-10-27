@@ -46,14 +46,14 @@ namespace ExerciseDbClass
         void GetWorkout(std::vector<CoreData::Workout>& exHandle);
 
         // Add a new tag to the tags database
-        bool AddTag(std::string tag);
+        bool AddTag(const std::string& tag);
 
         // Add a new exercise to the exercise database
-        bool AddExercise(CoreData::BaseEx ex);
+        bool AddExercise(const CoreData::BaseEx& ex);
 
         // Check whether an exercise or a tag already exists
-        bool CheckExerciseExists(std::string exStr);
-        bool CheckTagExists(std::string exStr);
+        bool CheckExerciseExists(const std::string& exStr);
+        bool CheckTagExists(const std::string& exStr);
     };
 
 }
