@@ -14,7 +14,9 @@ power,
 general,
 govt,
 builder,
-row
+row,
+cycle,
+boxing
 }
 {
 Workouts

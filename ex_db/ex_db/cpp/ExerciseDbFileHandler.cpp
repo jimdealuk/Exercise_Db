@@ -128,7 +128,7 @@ namespace ExerciseDbHandling
                             tempTags.push_back(tag);
                         }
                     }
-                    // process section data
+                    // process workout data
                     if (workoutProc)
                     {
                         // we've found "Workout" tag - Extract the sections & exercises
