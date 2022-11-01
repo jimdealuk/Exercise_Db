@@ -34,7 +34,9 @@ namespace ExerciseDbHandling
         bool ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises);
         bool ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections);
 
-
+        bool WriteExercisesToFile(std::fstream& fs);
+        bool WriteTagsToFile(std::fstream& fs);
+        bool WriteWorkoutsToFile(std::fstream& fs);
 
     public:
         ExerciseDbFileHandler();

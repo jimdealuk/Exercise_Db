@@ -138,8 +138,6 @@ namespace ExerciseDbHandling
                             size_t cpO = line.find(CoreData::exSep);
                             std::string name = line.substr(cpI+1, cpO-1); // get 
 
-                            // TODO - extend for multiple workouts
-
                             // create name workout
                             CoreData::Workout workout = { name };
 
@@ -185,6 +183,9 @@ namespace ExerciseDbHandling
         return ret;
     }
 
+    /* ReadSectionFromWorkout
+    *  This method reads the section from the workout data in
+    */
     bool ExerciseDbFileHandler::ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections)
     {
         bool ret = { false };
@@ -214,7 +215,7 @@ namespace ExerciseDbHandling
                 std::vector<CoreData::ExDescription> exercises;
                 if (!ReadExercisesFromSection(exs, exercises))
                 {
-                    throw "Bad Exercises";
+                    throw "Bad Exercises Read";
                 }
 
                 // insert the exercises in this section
@@ -238,7 +239,9 @@ namespace ExerciseDbHandling
         return ret;
     }
 
-
+    /* ReadExercisesFromSection
+    *  This method reads the exercises from the section data in
+    */
     bool ExerciseDbFileHandler::ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises)
     {
         bool ret = { false };
@@ -262,7 +265,142 @@ namespace ExerciseDbHandling
         return ret;
     }
 
+    /* WriteExercisesToFile
+    *  This method write the exercises to the data file
+    */
+    bool ExerciseDbFileHandler::WriteExercisesToFile(std::fstream& fs)
+    {
+        bool ret = { false };
+        try
+        {
+            // set up the "header" for the exercise section
+            fs << CoreData::lineSep << CoreData::tagBase << CoreData::lineSep;
 
+            std::string dataStr = { "" };
+
+            for (auto& ex : *m_exercises.get())
+            {
+                fs << CoreData::sepIn;
+                dataStr = ex.exName;
+                fs << dataStr;
+                fs << CoreData::exSep;
+                size_t numTags = { ex.exTags.size() };
+                for (std::string tag : ex.exTags)
+                {
+                    fs << tag;
+                    if (numTags > 1)
+                    {
+                        fs << CoreData::tagSep;
+                    }
+                    numTags--;
+                }
+                fs << CoreData::sepOut << CoreData::lineSep;
+            }
+            fs << CoreData::dataOut << CoreData::lineSep;
+            ret = true;
+        }
+        catch (...)
+        {
+            // ret already set false
+        }
+        return ret;
+    }
+
+    /* WriteTagsToFile
+    *  This method write the tags to the data file
+    */
+    bool ExerciseDbFileHandler::WriteTagsToFile(std::fstream& fs)
+    {
+        bool ret = { false };
+
+        try 
+        {
+            // set up the "header" for the tags
+            fs << CoreData::dataIn << CoreData::lineSep << CoreData::tagTags << CoreData::lineSep;
+
+            std::string dataStr = { "" };
+            size_t numTagsTags = { m_tags->size() };
+            for (auto& tg : *m_tags.get())
+            {
+                fs << tg;
+                if (numTagsTags > 1)
+                {
+                    fs << CoreData::tagSep;
+                }
+                numTagsTags--;
+                fs << CoreData::lineSep;
+            }
+            fs << CoreData::dataOut;
+            fs << CoreData::lineSep;
+            ret = true;
+        }
+        catch (...)
+        {
+            // ret already set false
+        }
+
+        return ret;
+    }
+
+    /* WriteWorkoutsToFile
+    *  This method write the workouts to the data file
+    */
+    bool ExerciseDbFileHandler::WriteWorkoutsToFile(std::fstream& fs)
+    {
+        bool ret = { false };
+
+        try
+        {
+            // set up the "header" for the sections
+            fs << CoreData::dataIn << CoreData::lineSep << CoreData::workoutTags << CoreData::lineSep;
+
+            std::string dataStr = { "" };
+
+            size_t numWorkoutsTags = { m_workouts->size() };
+            for (auto& wo : *m_workouts.get())
+            {
+                fs << CoreData::sepIn; // (
+                dataStr = wo.name;
+                fs << dataStr; // (<name>
+                fs << CoreData::exSep; // (<name>:
+                fs << CoreData::sepIn; // (<name>:(
+                fs << CoreData::sectionTags; // (<name>:(Section
+                fs << CoreData::exSep; // (<name>:(Section:
+
+                std::vector<CoreData::WorkoutSection> woSec = wo.sections;
+                std::string secName = { "" };
+                size_t numSections = { woSec.size() };
+                for (auto& ws : woSec)
+                {
+                    fs << CoreData::exIn;
+                    secName = ws.name;
+                    fs << secName;
+                    fs << CoreData::exSep;
+
+                    std::string ex = { "" };
+                    std::vector<CoreData::ExDescription> exs = ws.excercises;
+                    for (auto ex : exs)
+                    {
+                        fs << CoreData::sepIn;
+                        fs << ex.exName;
+                        fs << CoreData::sepOut;
+                    }
+
+                    fs << CoreData::exOut;// (<name>:(Section:[(<ex>]
+
+                }
+                fs << CoreData::sepOut; // (<name>:(Section:[  ])
+                fs << CoreData::sepOut; // (<name>:(Section:[  ]))
+                fs << CoreData::lineSep;
+            }
+        }
+        catch (...)
+        {
+            // ret already set false
+        }
+
+        return ret;
+    }
 
     /* WriteExDb 
     *  Write the exerce, tag and section data from their relevant containers
@@ -289,92 +427,24 @@ namespace ExerciseDbHandling
         std::fstream fs;
         try {
             fs.open(CoreData::file, std::fstream::out);
-            // set up the "header" for the exercise section
-            fs << CoreData::dataIn << CoreData::lineSep << CoreData::tagBase << CoreData::lineSep;
 
-            std::string dataStr = { "" };
+            fs << CoreData::dataIn;
 
-            for (auto& ex : *m_exercises.get())
+            if (!WriteExercisesToFile(fs))
             {
-                fs << CoreData::sepIn;
-                dataStr = ex.exName;
-                fs << dataStr;
-                fs << CoreData::exSep;
-                size_t numTags = { ex.exTags.size() };
-                for (std::string tag : ex.exTags)
-                {
-                    fs << tag;
-                    if (numTags > 1)
-                    {
-                        fs << CoreData::tagSep;
-                    }
-                    numTags--;
-                }
-                fs << CoreData::sepOut << CoreData::lineSep;
+                throw "Bad Exercises Write";
             }
-            fs << CoreData::dataOut << CoreData::lineSep;
 
-            // set up the "header" for the tags
-            fs << CoreData::dataIn << CoreData::lineSep << CoreData::tagTags << CoreData::lineSep;
-
-            dataStr = { "" };
-            size_t numTagsTags = { m_tags->size() };
-            for (auto& tg : *m_tags.get())
+            if (!WriteTagsToFile(fs))
             {
-                fs << tg;
-                if (numTagsTags > 1)
-                {
-                    fs << CoreData::tagSep;
-                }
-                numTagsTags--;
-                fs << CoreData::lineSep;
+                throw "Bad Tags Write";
             }
-            fs << CoreData::dataOut;
-            fs << CoreData::lineSep;
 
-            // set up the "header" for the sections
-            fs << CoreData::dataIn << CoreData::lineSep << CoreData::workoutTags << CoreData::lineSep;
-
-            dataStr = { "" };
-
-            size_t numWorkoutsTags = { m_workouts->size() };
-            for (auto& wo : *m_workouts.get())
+            if (!WriteWorkoutsToFile(fs))
             {
-                fs << CoreData::sepIn; // (
-                dataStr = wo.name;
-                fs << dataStr; // (<name>
-                fs << CoreData::exSep; // (<name>:
-                fs << CoreData::sepIn; // (<name>:(
-                fs << CoreData::sectionTags; // (<name>:(Section
-                fs << CoreData::exSep; // (<name>:(Section:
-
-                std::vector<CoreData::WorkoutSection> woSec = wo.sections;
-                std::string secName = { "" };
-                size_t numSections = { woSec.size() };
-                for (auto& ws : woSec)
-                {
-                    fs << CoreData::exIn; // (<name>:(Section:[
-                    secName = ws.name;
-                    fs << secName;
-                    fs << CoreData::exSep;
-
-                    std::string ex = { "" };
-                    std::vector<CoreData::ExDescription> exs = ws.excercises;
-                    for (auto ex : exs)
-                    {
-                        fs << CoreData::sepIn;
-                        fs << ex.exName;
-                        fs << CoreData::sepOut;
-                    }
-
-                    fs << CoreData::exOut;// (<name>:(Section:[(<ex>]
-
-                }
-                fs << CoreData::sepOut; // (<name>:(Section:[  ])
-                fs << CoreData::sepOut; // (<name>:(Section:[  ]))
-                fs << CoreData::lineSep;
-
+                throw "Bad Workouts Write";
             }
+
             fs << CoreData::lineSep;
             fs << CoreData::dataOut;
 
