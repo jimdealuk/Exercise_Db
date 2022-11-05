@@ -113,6 +113,49 @@ namespace ExercideDbUI
         void StartUI();
     };
 
+
+    class WorkoutBuilder
+    {
+    public:
+        virtual void BuildWorkout(CoreData::WorkoutBase* workout) = 0;
+        virtual void BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout) = 0;
+        virtual void BuildExerciseList(CoreData::ExDescription* ex) = 0;
+    };
+
+    class BuildWorkoutImpl :public WorkoutBuilder
+    {
+    private:
+        std::unique_ptr< std::vector<CoreData::WorkoutBase*>> m_workouts;
+        std::shared_ptr <ExerciseDbClass::ExerciseDb> m_exDb;
+
+
+    public:
+
+        BuildWorkoutImpl() = default;
+        BuildWorkoutImpl(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver);
+        ~BuildWorkoutImpl() = default;
+
+
+        virtual void BuildWorkout(CoreData::WorkoutBase* workout);
+        virtual void BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout);
+        virtual void BuildExerciseList(CoreData::ExDescription* ex);
+    };
+
+
+
+    class BuildFullWorkout :public BuildWorkoutImpl
+    {
+        virtual void BuildWorkout(CoreData::Workout& workout);
+        virtual void BuildSections(CoreData::WorkoutSection& section, CoreData::WorkoutBase& workout);
+        virtual void BuildExerciseList(CoreData::ExDescription& ex);
+    };
+
+    class BuildQuickWorkout :public BuildWorkoutImpl
+    {
+        virtual void BuildWorkout(CoreData::QuickWorkout& workout);
+        virtual void BuildExerciseList(CoreData::ExDescription& ex);
+    };
+
 }
 
 #endif /* !ExercideDbUI_H */

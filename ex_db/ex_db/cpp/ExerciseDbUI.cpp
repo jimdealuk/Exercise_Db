@@ -285,4 +285,38 @@ namespace ExercideDbUI
 
         } while (!exitMenu);
     }
+
+
+
+    BuildWorkoutImpl::BuildWorkoutImpl(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
+    {
+        m_exDb = std::move(receiver);
+        m_workouts = std::make_unique < std::vector<CoreData::WorkoutBase*>>();
+    }
+
+    void BuildWorkoutImpl::BuildWorkout(CoreData::WorkoutBase* workout)
+    {
+        // TODO - propogate error / not added condition
+        std::vector<CoreData::WorkoutBase* >::iterator it = std::find(begin(*m_workouts), end(*m_workouts), workout);
+        if (it == m_workouts->end())
+        {
+            m_workouts->push_back(workout); // won't convert between inherited types : struct not class
+        }
+    }
+
+    void BuildWorkoutImpl::BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout)
+    {
+        std::vector<CoreData::WorkoutBase* >::iterator it = std::find(begin(*m_workouts), end(*m_workouts), workout);
+        if (it != m_workouts->end())
+        {
+            int n = 0;
+        }
+    }
+
+    void BuildWorkoutImpl::BuildExerciseList(CoreData::ExDescription* ex)
+    {
+    }
+
+
+
 }

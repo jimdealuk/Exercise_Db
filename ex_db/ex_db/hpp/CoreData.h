@@ -80,22 +80,51 @@ namespace CoreData
     };
 
 
+// https://stackoverflow.com/questions/4915970/c-casting-to-derived-and-parent-structs
+
+
     /* Data Type : WorkoutSection
     *  Structure containing section name and
     *  exercises contained in this section
     */
-    struct WorkoutSection {
+    struct WorkoutSection 
+    {
         std::string name = { "" };
         std::vector<ExDescription> excercises;
+    };
+
+    /* Data Type : WorkoutBase
+    *  Structure containing Workout name 
+    */
+    struct WorkoutBase {
+        std::string name = { "" };
+
+        bool operator==(const WorkoutBase& rhs) const
+        {
+            return name == rhs.name;
+        }
+
+        bool operator!=(const WorkoutBase& rhs) const
+        {
+            return name != rhs.name;
+        }
+
     };
 
     /* Data Type : Workout
     *  Structure containing Workout name and
     *  sections contained in this workout
     */
-    struct Workout {
-        std::string name = { "" };
+    struct Workout : WorkoutBase
+    {
         std::vector<WorkoutSection> sections;
+
+        //bool operator==(const Workout& rhs) const
+        //{
+        //    return name == rhs.name;
+        //}
+
+
     };
 
     /* Data Type : QuickWorkout
@@ -103,8 +132,8 @@ namespace CoreData
     *  Structure containing Workout name and
     *  exercises contained in this workout
     */
-    struct QuickWorkout {
-        std::string name = { "" };
+    struct QuickWorkout : WorkoutBase
+    {
         std::vector<ExDescription> excercises;
     };
 

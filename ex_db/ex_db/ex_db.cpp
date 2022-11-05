@@ -18,48 +18,6 @@
 #include "hpp/ExerciseDbUI.h"
 
 
-namespace ExerciseTemplates
-{
-    class Sections
-    {
-    private:
-        std::vector<std::string> m_sections;
-
-    public:
-        Sections() = default;
-        Sections(Sections& sec) = delete;
-
-        void GetSections(std::vector<std::string>& secs)
-        {
-            secs = m_sections;
-        }
-
-        bool AddSection(std::string sec)
-        {
-            bool ret = { false };
-            auto it = std::find(m_sections.begin(), m_sections.end(), sec);
-            if (it == m_sections.end())
-            {
-                m_sections.push_back(sec);
-                ret = true;
-            }
-            return ret;
-        }
-    };
-
-
-    class AddExerciseToSection
-    {
-    private:
-        std::shared_ptr<CoreData::BaseEx> m_exercises;
-        std::unique_ptr<std::vector<CoreData::ExDescription>> m_userExercises;
-
-    public:
-
-    };
-
-}
-
 
 int main()
 {
@@ -71,6 +29,34 @@ int main()
         if (db)
         {
             std::shared_ptr<ExerciseDbClass::ExerciseDb> dbShared = std::move(db);
+
+// TO DELETE - CODE TO TEST Workout Builder(s)
+            std::shared_ptr < ExercideDbUI::BuildWorkoutImpl> bw = std::make_shared< ExercideDbUI::BuildWorkoutImpl>(dbShared);
+
+            CoreData::Workout* w1 = new CoreData::Workout;
+            CoreData::WorkoutSection s2 = { "main" };
+            std::vector<CoreData::WorkoutSection> sections;
+            sections.push_back(s2);
+            w1->name = "jim";
+            w1->sections = sections;
+
+            CoreData::Workout* w2 = new CoreData::Workout;
+            w2->name = "bill";
+
+            CoreData::Workout* w3 = new CoreData::Workout;
+            w3->name = "ted";
+
+            bw->BuildWorkout(w1);
+            bw->BuildWorkout(w2);
+            bw->BuildWorkout(w3);
+
+            CoreData::WorkoutSection* section = new CoreData::WorkoutSection;
+            section->name = "warmup";
+
+            bw->BuildSections(section, w1);
+
+            int y = 0;
+// DELETE TO HERE..
 
             if(dbShared)
             {
