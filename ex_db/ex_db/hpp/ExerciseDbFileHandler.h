@@ -31,8 +31,16 @@ namespace ExerciseDbHandling
         std::unique_ptr<std::vector<std::string>> m_tags;
         std::unique_ptr<std::vector<CoreData::Workout>> m_workouts;
 
+        std::unique_ptr<CoreData::WorkoutComponent> m_workoutComponents;
+
+
+
         bool ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises);
         bool ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections);
+
+        bool ReadExerciseComponentsFromSection(std::string& sectionStr, CoreData::WorkoutComponent& sections);
+        bool ReadExerciseComponentsFromWorkout(std::string& sectionStr, CoreData::WorkoutComponent& sections);
+
 
         bool WriteExercisesToFile(std::fstream& fs);
         bool WriteTagsToFile(std::fstream& fs);

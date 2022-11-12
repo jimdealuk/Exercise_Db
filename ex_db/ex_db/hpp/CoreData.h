@@ -4,6 +4,10 @@
 #define CoreData_H
 
 #include <string>
+#include <list>
+
+
+#include <iostream>
 
 namespace CoreData
 {
@@ -136,6 +140,113 @@ namespace CoreData
     {
         std::vector<ExDescription> excercises;
     };
+
+
+
+    /* Component based structure
+    *  This will replace above data structure(s)
+    *  This is based on the Composite Design pattern
+    */
+    class Component {
+    protected:
+        std::string m_name;
+    public:
+        virtual ~Component() {}
+
+        virtual void Add(Component* component) {}
+        virtual void Remove(Component* component) {}
+
+        virtual bool IsComposite() const {
+            return false;
+        }
+
+        virtual void SetName(std::string name) { m_name = name; }
+        virtual std::string GetName() { return m_name; }
+
+        virtual void print() {}
+
+    };
+
+
+    /* Place holder class that allows different kinds of exercise 
+    *  to be created - but also added to different workout structures
+    */
+    class ExBase : public Component {
+
+    };
+
+
+    /* Free weight exercise
+    *  Data needed : weight / sets / reps per set
+    */
+    class WeightEx : public ExBase
+    {
+    public:
+        int exSets = 0;
+        int exWeight = 0;
+        int exReps = 0;
+    };
+
+    /* Rowing exercise
+    *  Data needed : 
+    *  distance to row 
+    *  time spent / target time (?)
+    *  diffculty : bad conditions / rowing machine difficulty setting (?)
+    */
+    struct RowEx : public ExBase
+    {
+    public:
+        int distanceInKm = 0;
+        int timeInMins = 0;
+        int difficulty = 0;
+    };
+
+
+    /* WorkoutComponent
+    *  implementation based on Component structure
+    *  As with Composite pattern - Components are interchangeable
+    */
+    class WorkoutComponent : public Component {
+
+    protected:
+        std::list<std::unique_ptr<Component>> m_children;
+
+    public:
+        void Add(Component* component) override {
+            this->m_children.push_back(std::unique_ptr<Component>(std::move(component)));
+        }
+
+        void Remove(Component* component) override {
+            this->m_children.remove(std::unique_ptr<Component>(std::move(component)));
+        }
+
+        bool IsComposite() const override {
+            return true;
+        }
+
+        // TEST METHOD - for dev
+        void print() override
+        {
+            std::cout << GetName() << std::endl;
+
+            for (auto& w : m_children)
+            {
+                std::cout << w->GetName() << std::endl;
+            }
+        }
+
+        virtual void SetName(std::string name)
+        {
+            m_name = name;
+        }
+        virtual std::string GetName()
+        {
+            return m_name;
+        }
+
+    };
+
+
 
 }
 
