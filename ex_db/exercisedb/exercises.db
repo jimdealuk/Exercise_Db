@@ -6,7 +6,6 @@ Exercises
 (press:power,builder)
 (curl:builder)
 (row:row)
-(extension:power)
 }
 {
 Tags
@@ -14,11 +13,11 @@ power,
 general,
 govt,
 builder,
-row,
-cycle,
-boxing
+row
 }
 {
 Workouts
 (Jim:(Section:[Warmup:(cycle)][Main:(press)(deadlift)(curl)]))
 (Fred:(Section:[Warmup:(row)][Main:(squat)(deadlift)(flye)]))
+
+}

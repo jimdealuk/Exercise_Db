@@ -8,6 +8,8 @@
 
 
 #include <iostream>
+#include <fstream>
+
 
 namespace CoreData
 {
@@ -17,6 +19,7 @@ namespace CoreData
     const std::string file = { "../exercisedb/exercises.db" };
 
     const std::string tempfile = { "../exercisedb/tempexercises.db" };
+    const std::string tempfilealt = { "../exercisedb/tempexercisesalt.db" };
 
 
     const std::string dataIn = { "{" };
@@ -34,6 +37,9 @@ namespace CoreData
     const std::string tagTags = { "Tags" };
     const std::string sectionTags = { "Section" };
     const std::string workoutTags = { "Workouts" };
+    const std::string workoutName = { "WorkoutName" };
+    const std::string topName = { "WorkoutStore" };
+
 
     /* Data Type : BaseEx
     *  Structure containing exercise name and it's associated tags
@@ -150,21 +156,28 @@ namespace CoreData
     class Component {
     protected:
         std::string m_name;
+        std::string m_componentType;
+        std::list<std::shared_ptr<Component>> m_children;
+
     public:
         virtual ~Component() {}
 
         virtual void Add(Component* component) {}
         virtual void Remove(Component* component) {}
 
-        virtual bool IsComposite() const {
-            return false;
-        }
+        virtual bool IsComposite() const { return false; }
 
         virtual void SetName(std::string name) { m_name = name; }
         virtual std::string GetName() { return m_name; }
 
+        virtual void SetCompType(std::string compType) { m_componentType = compType; }
+        virtual std::string GetCompType() { return m_componentType; }
+
         virtual void print() {}
 
+        virtual void SendToFile(std::fstream& fs) { fs << m_name << " "; }
+
+        virtual std::list<std::shared_ptr<Component>> GetChildrenCopy() { return m_children; }
     };
 
 
@@ -185,6 +198,10 @@ namespace CoreData
         int exSets = 0;
         int exWeight = 0;
         int exReps = 0;
+
+        void SendToFile(std::fstream& fs) override
+            { fs << exSets << " " << exWeight << " " << exReps; }
+
     };
 
     /* Rowing exercise
@@ -199,6 +216,11 @@ namespace CoreData
         int distanceInKm = 0;
         int timeInMins = 0;
         int difficulty = 0;
+
+        void SendToFile(std::fstream& fs) override
+        {
+            fs << distanceInKm << " " << timeInMins << " " << difficulty;
+        }
     };
 
 
@@ -208,25 +230,57 @@ namespace CoreData
     */
     class WorkoutComponent : public Component {
 
-    protected:
-        std::list<std::unique_ptr<Component>> m_children;
-
     public:
         void Add(Component* component) override {
-            this->m_children.push_back(std::unique_ptr<Component>(std::move(component)));
+            this->m_children.push_back(std::shared_ptr<Component>(std::move(component)));
         }
 
         void Remove(Component* component) override {
-            this->m_children.remove(std::unique_ptr<Component>(std::move(component)));
+            this->m_children.remove(std::shared_ptr<Component>(std::move(component)));
         }
 
         bool IsComposite() const override {
             return true;
         }
 
+        void SendToFile(std::fstream& fs) override
+        {
+            fs << m_name << " ";
+
+            if (m_componentType == workoutName)
+            {
+                fs << CoreData::exSep << CoreData::sepIn << CoreData::sectionTags << CoreData::exSep;
+                for (auto& c : m_children)
+                {
+                    fs << CoreData::exIn;
+                    c->SendToFile(fs);
+                    fs << CoreData::exOut;
+                }
+            }
+            else if (m_componentType == sectionTags)
+            {
+                fs << CoreData::exSep;
+                for (auto& c : m_children)
+                {
+                    fs << CoreData::sepIn;
+                    c->SendToFile(fs);
+                    fs << CoreData::sepOut;
+                }
+            }
+            else
+            {
+                for (auto& c : m_children)
+                {
+                    c->SendToFile(fs);
+                }
+            }
+        }
+
+
         // TEST METHOD - for dev
         void print() override
         {
+
             std::cout << GetName() << std::endl;
 
             for (auto& w : m_children)
@@ -239,14 +293,12 @@ namespace CoreData
         {
             m_name = name;
         }
+
         virtual std::string GetName()
         {
             return m_name;
         }
-
     };
-
-
 
 }
 
