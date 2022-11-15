@@ -90,8 +90,8 @@ namespace CoreData
     };
 
 
-// https://stackoverflow.com/questions/4915970/c-casting-to-derived-and-parent-structs
-
+    // OLD DATA TYPES - TODO - remove
+    // THESE DISAPPEAR WHEN WorkoutBuilder re-implemented using Component data types
 
     /* Data Type : WorkoutSection
     *  Structure containing section name and
@@ -175,7 +175,7 @@ namespace CoreData
 
         virtual void print() {}
 
-        virtual void SendToFile(std::fstream& fs) { fs << m_name << " "; }
+        virtual void SendToFile(std::fstream& fs) { fs << m_name; }
 
         virtual std::list<std::shared_ptr<Component>> GetChildrenCopy() { return m_children; }
     };
@@ -245,7 +245,7 @@ namespace CoreData
 
         void SendToFile(std::fstream& fs) override
         {
-            fs << m_name << " ";
+            fs << m_name;
 
             if (m_componentType == workoutName)
             {

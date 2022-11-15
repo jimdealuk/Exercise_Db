@@ -21,7 +21,6 @@ namespace ExerciseDbHandling
     {
         m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_tags = std::make_unique< std::vector<std::string> >();
-        m_workouts = std::make_unique< std::vector<CoreData::Workout> >();
 
         m_workoutComponents = std::make_unique<CoreData::WorkoutComponent>();
         m_workoutComponents->SetName("class workouts");
@@ -67,7 +66,6 @@ namespace ExerciseDbHandling
 
             std::vector<CoreData::BaseEx> tempExcerises;
             std::vector<std::string> tempTags;
-            std::vector<CoreData::Workout> tempWorkouts;
 
             CoreData::WorkoutComponent* topWorkout = new CoreData::WorkoutComponent();
             topWorkout->SetName(CoreData::topName);
@@ -144,9 +142,7 @@ namespace ExerciseDbHandling
                             size_t cpO = line.find(CoreData::exSep);
                             std::string name = line.substr(cpI+1, cpO-1); // get 
 
-                            // create name workout
-                            CoreData::Workout workout = { name };
-
+                            // create & name workout
                             CoreData::WorkoutComponent* wc = new CoreData::WorkoutComponent();
                             wc->SetCompType(CoreData::workoutName);
                             wc->SetName(name);
@@ -163,36 +159,21 @@ namespace ExerciseDbHandling
                                 size_t exI = line.find(CoreData::exIn);
                                 size_t exO = line.find(CoreData::exOut);
 
-                                // TODO - take out test code 
-                                std::string tempLine = line;
-
-                                std::vector<CoreData::WorkoutSection> sections;
-                                ReadSectionFromWorkout(line, sections);
-
-                                // TODO - take out test code 
-                                ReadExerciseComponentsFromWorkout(tempLine, *wc);
-
-                                workout.sections = sections;                                
+                                ReadExerciseComponentsFromWorkout(line, *wc);
                             }
-                            tempWorkouts.push_back(workout);
 
                             topWorkout->Add(wc);
                         }
                     }
                 }
-                // if we're here - the exercise data *should* have been read in to the relevant container
-                ret = true;
                 // add exercises in to container attribute *after* all of them have been retreived
                 using std::begin, std::end;
                 m_exercises->insert(end(*m_exercises), begin(tempExcerises), end(tempExcerises));
                 m_tags->insert(end(*m_tags), begin(tempTags), end(tempTags));
-                m_workouts->insert(end(*m_workouts), begin(tempWorkouts), end(tempWorkouts));
-
                 m_workoutComponents->Add(std::move(topWorkout));
 
-                // TODO - take out test code 
-                std::cout << "\n\n";
-                m_workoutComponents->print();
+                // if we're here - the exercise data *should* have been read in to the relevant container
+                ret = true;
             }
         }
         catch (...)
@@ -201,90 +182,6 @@ namespace ExerciseDbHandling
             ret = false;
         }
         fs.close();
-        return ret;
-    }
-
-    /* ReadSectionFromWorkout
-    *  This method reads the section from the workout data in
-    */
-    bool ExerciseDbFileHandler::ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections)
-    {
-        bool ret = { false };
-        std::string section = { "" };
-
-        try
-        {
-            size_t exO = sectionStr.find(CoreData::exOut);
-
-            do {
-                // remove the current section
-                size_t endSec = sectionStr.find(CoreData::exOut);
-
-                // get section
-                section = sectionStr.substr(0, endSec + 1);
-
-                // get section name
-                size_t secNameEnd = section.find(CoreData::exSep);
-                std::string secName = section.substr(1, secNameEnd - 1);
-
-                CoreData::WorkoutSection sectionStore;
-                sectionStore.name = secName;
-
-                size_t en = section.size() - secNameEnd;
-                std::string exs = section.substr(secNameEnd + 1, en - 2);
-
-                std::string exsCP = exs;
-
-                std::vector<CoreData::ExDescription> exercises;
-                if (!ReadExercisesFromSection(exs, exercises))
-                {
-                    throw "Bad Exercises Read";
-                }
-
-                // insert the exercises in this section
-                sectionStore.excercises.insert(end(sectionStore.excercises), begin(exercises), end(exercises));
-
-                // remove the current section
-                endSec = sectionStr.find(CoreData::exOut);
-                sectionStr = sectionStr.erase(0, (endSec + 1));
-
-                exO = sectionStr.find(CoreData::exOut);
-
-                sections.push_back(sectionStore);
-            } while (exO != std::string::npos);
-
-        }
-        catch (...)
-        {
-            //false already set :: TODO - this may falsely look like a reading sections problem
-        }
-
-        return ret;
-    }
-
-    /* ReadExercisesFromSection
-    *  This method reads the exercises from the section data in
-    */
-    bool ExerciseDbFileHandler::ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises)
-    {
-        bool ret = { false };
-        try
-        {
-            do {
-                size_t exEnd = sectionStr.find(CoreData::sepOut);
-                std::string ex = sectionStr.substr(1, exEnd - 1);
-                sectionStr = sectionStr.erase(0, (exEnd + 1));
-
-                CoreData::ExDescription exd = { ex };
-                exercises.push_back(exd);
-            } while (sectionStr.size() > 0);
-            ret = true;
-        }
-        catch (...)
-        {
-            // return already set to false
-        }
-
         return ret;
     }
 
@@ -325,7 +222,6 @@ namespace ExerciseDbHandling
     bool ExerciseDbFileHandler::ReadExerciseComponentsFromWorkout(std::string& sectionStr, CoreData::WorkoutComponent& sections)
     {
         bool ret = { false };
-
         std::string section = { "" };
 
         try
@@ -350,9 +246,6 @@ namespace ExerciseDbHandling
                 wc->SetName(secName);
                 wc->SetCompType(CoreData::sectionTags);
                 ReadExerciseComponentsFromSection(exs, *wc);
-
-                // TODO - take out test code 
-                wc->print();
 
                 // remove the current section
                 endSec = sectionStr.find(CoreData::exOut);
@@ -427,7 +320,6 @@ namespace ExerciseDbHandling
             // set up the "header" for the sections
             fs << CoreData::dataIn << CoreData::lineSep << CoreData::workoutTags << CoreData::lineSep;
 
-
             std::list<std::shared_ptr<CoreData::Component>> wc = m_workoutComponents->GetChildrenCopy();
 
             if (wc.size() == 1) // there should only be one component at this level
@@ -444,9 +336,7 @@ namespace ExerciseDbHandling
                 }
             }
 
-            fs << CoreData::lineSep;
-
-            fs << CoreData::dataOut << CoreData::lineSep;
+            fs << CoreData::dataOut;
             ret = true;
         }
         catch (...)
@@ -493,66 +383,6 @@ namespace ExerciseDbHandling
         return ret;
     }
 
-    /* WriteWorkoutsToFile
-    *  This method write the workouts to the data file
-    */
-    bool ExerciseDbFileHandler::WriteWorkoutsToFile(std::fstream& fs)
-    {
-        bool ret = { false };
-
-        try
-        {
-            // set up the "header" for the sections
-            fs << CoreData::dataIn << CoreData::lineSep << CoreData::workoutTags << CoreData::lineSep;
-
-            std::string dataStr = { "" };
-
-            size_t numWorkoutsTags = { m_workouts->size() };
-            for (auto& wo : *m_workouts.get())
-            {
-                fs << CoreData::sepIn; // (
-                dataStr = wo.name;
-                fs << dataStr; // (<name>
-                fs << CoreData::exSep; // (<name>:
-                fs << CoreData::sepIn; // (<name>:(
-                fs << CoreData::sectionTags; // (<name>:(Section
-                fs << CoreData::exSep; // (<name>:(Section:
-
-                std::vector<CoreData::WorkoutSection> woSec = wo.sections;
-                std::string secName = { "" };
-                size_t numSections = { woSec.size() };
-                for (auto& ws : woSec)
-                {
-                    fs << CoreData::exIn;
-                    secName = ws.name;
-                    fs << secName;
-                    fs << CoreData::exSep;
-
-                    std::string ex = { "" };
-                    std::vector<CoreData::ExDescription> exs = ws.excercises;
-                    for (auto ex : exs)
-                    {
-                        fs << CoreData::sepIn;
-                        fs << ex.exName;
-                        fs << CoreData::sepOut;
-                    }
-
-                    fs << CoreData::exOut;// (<name>:(Section:[(<ex>]
-
-                }
-                fs << CoreData::sepOut; // (<name>:(Section:[  ])
-                fs << CoreData::sepOut; // (<name>:(Section:[  ]))
-                fs << CoreData::lineSep;
-            }
-            ret = true;
-        }
-        catch (...)
-        {
-            // ret already set false
-        }
-
-        return ret;
-    }
 
     /* WriteExDb 
     *  Write the exerce, tag and section data from their relevant containers
@@ -578,13 +408,8 @@ namespace ExerciseDbHandling
 
         std::fstream fs;
 
-        // TODO - take out test code 
-        std::fstream fsTest;
-
         try {
             fs.open(CoreData::file, std::fstream::out);
-
-            fsTest.open(CoreData::tempfilealt, std::fstream::out);
 
             fs << CoreData::dataIn;
             if (!WriteExercisesToFile(fs))
@@ -597,17 +422,10 @@ namespace ExerciseDbHandling
                 throw "Bad Tags Write";
             }
 
-            // TODO - take out test code 
-            WriteExerciseComponentsToFile(fsTest);
-            fsTest.close();
-
-            if (!WriteWorkoutsToFile(fs))
+            if (!WriteExerciseComponentsToFile(fs))
             {
                 throw "Bad Workouts Write";
             }
-
-            fs << CoreData::lineSep;
-            fs << CoreData::dataOut;
 
             ret = true;
         }
@@ -633,12 +451,6 @@ namespace ExerciseDbHandling
         tagsHandle = *(m_tags.get());
     }
 
-    // Set return reference parameter to the sections container
-    void ExerciseDbFileHandler::GetWorkout(std::vector<CoreData::Workout>& tagsHandle)
-    {
-        tagsHandle = *(m_workouts.get());
-    }
-
     // replace the current tags container with the one in the parameter
     void ExerciseDbFileHandler::SetExTags(std::unique_ptr<std::vector<std::string>> tags)
     {
@@ -651,9 +463,4 @@ namespace ExerciseDbHandling
         m_exercises = std::move(tags);
     }
 
-    // replace the current sections container with the one in the parameter
-    void ExerciseDbFileHandler::SetWorkout(std::unique_ptr<std::vector<CoreData::Workout>> tags)
-    {
-        m_workouts = std::move(tags);
-    }
 }

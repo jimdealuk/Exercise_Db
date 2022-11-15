@@ -25,7 +25,6 @@ namespace ExerciseDbClass
         // exercises database
         std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
-        std::unique_ptr<std::vector<CoreData::Workout>> m_workout;
 
         // a handle to the exercise database storage
         std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> m_exercisesBase;
@@ -43,7 +42,6 @@ namespace ExerciseDbClass
         // get a copy of the exercise, tag and sections containers
         void GetExTags(std::vector<std::string>& tagsHandle);
         void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
-        void GetWorkout(std::vector<CoreData::Workout>& exHandle);
 
         // Add a new tag to the tags database
         bool AddTag(const std::string& tag);

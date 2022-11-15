@@ -29,26 +29,15 @@ namespace ExerciseDbHandling
         // exercises database
         std::unique_ptr<std::vector<CoreData::BaseEx>> m_exercises;
         std::unique_ptr<std::vector<std::string>> m_tags;
-        std::unique_ptr<std::vector<CoreData::Workout>> m_workouts;
-
         std::unique_ptr<CoreData::WorkoutComponent> m_workoutComponents;
 
-
-
-        bool ReadExercisesFromSection(std::string& sectionStr, std::vector<CoreData::ExDescription>& exercises);
-        bool ReadSectionFromWorkout(std::string& sectionStr, std::vector<CoreData::WorkoutSection>& sections);
-
-        // new structure
         bool ReadExerciseComponentsFromSection(std::string& sectionStr, CoreData::WorkoutComponent& sections);
         bool ReadExerciseComponentsFromWorkout(std::string& sectionStr, CoreData::WorkoutComponent& sections);
 
-
         bool WriteExercisesToFile(std::fstream& fs);
         bool WriteTagsToFile(std::fstream& fs);
-        bool WriteWorkoutsToFile(std::fstream& fs);
 
         bool WriteExerciseComponentsToFile(std::fstream& fs);
-
 
     public:
         ExerciseDbFileHandler();
@@ -61,13 +50,10 @@ namespace ExerciseDbHandling
         // Get the exercises, tags and section containers from the database
         virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle);
         virtual void GetExTags(std::vector<std::string>& tagsHandle);
-        virtual void GetWorkout(std::vector<CoreData::Workout>& tagsHandle);
 
         // Set the exercises, tags and section containers in the database
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags);
         virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags);
-        virtual void SetWorkout(std::unique_ptr<std::vector<CoreData::Workout>> tags);
-
 
     };
 }

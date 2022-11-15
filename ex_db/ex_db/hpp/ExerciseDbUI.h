@@ -114,6 +114,9 @@ namespace ExercideDbUI
     };
 
 
+    // FOR FUTURE DEVELOPMENT
+    // Re-implement builder pattern - using component data types
+
     class WorkoutBuilder
     {
     public:
