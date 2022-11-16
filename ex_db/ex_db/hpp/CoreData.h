@@ -90,65 +90,6 @@ namespace CoreData
     };
 
 
-    // OLD DATA TYPES - TODO - remove
-    // THESE DISAPPEAR WHEN WorkoutBuilder re-implemented using Component data types
-
-    /* Data Type : WorkoutSection
-    *  Structure containing section name and
-    *  exercises contained in this section
-    */
-    struct WorkoutSection 
-    {
-        std::string name = { "" };
-        std::vector<ExDescription> excercises;
-    };
-
-    /* Data Type : WorkoutBase
-    *  Structure containing Workout name 
-    */
-    struct WorkoutBase {
-        std::string name = { "" };
-
-        bool operator==(const WorkoutBase& rhs) const
-        {
-            return name == rhs.name;
-        }
-
-        bool operator!=(const WorkoutBase& rhs) const
-        {
-            return name != rhs.name;
-        }
-
-    };
-
-    /* Data Type : Workout
-    *  Structure containing Workout name and
-    *  sections contained in this workout
-    */
-    struct Workout : WorkoutBase
-    {
-        std::vector<WorkoutSection> sections;
-
-        //bool operator==(const Workout& rhs) const
-        //{
-        //    return name == rhs.name;
-        //}
-
-
-    };
-
-    /* Data Type : QuickWorkout
-    *  This structure may be used for a rehab program that does not require sections
-    *  Structure containing Workout name and
-    *  exercises contained in this workout
-    */
-    struct QuickWorkout : WorkoutBase
-    {
-        std::vector<ExDescription> excercises;
-    };
-
-
-
     /* Component based structure
     *  This will replace above data structure(s)
     *  This is based on the Composite Design pattern
@@ -157,7 +98,6 @@ namespace CoreData
     protected:
         std::string m_name;
         std::string m_componentType;
-        std::list<std::shared_ptr<Component>> m_children;
 
     public:
         virtual ~Component() {}
@@ -177,7 +117,7 @@ namespace CoreData
 
         virtual void SendToFile(std::fstream& fs) { fs << m_name; }
 
-        virtual std::list<std::shared_ptr<Component>> GetChildrenCopy() { return m_children; }
+        virtual std::list<std::shared_ptr<Component>> GetChildrenCopy() { return std::list<std::shared_ptr<Component>>(); }
     };
 
 
@@ -224,16 +164,46 @@ namespace CoreData
     };
 
 
+    /* Stretch exercise
+    *  diffculty : light <> deep stretch
+    */
+    struct StretchEx : public ExBase
+    {
+    public:
+        int difficulty = 0;
+
+        void SendToFile(std::fstream& fs) override
+        {
+            fs << difficulty;
+        }
+    };
+
     /* WorkoutComponent
     *  implementation based on Component structure
     *  As with Composite pattern - Components are interchangeable
     */
     class WorkoutComponent : public Component {
+        std::list<std::shared_ptr<Component>> m_children;
+
 
     public:
         void Add(Component* component) override {
             this->m_children.push_back(std::shared_ptr<Component>(std::move(component)));
         }
+
+        void AddExerciseToSection(std::string sec, Component* com)
+        {
+            for (auto& l : m_children)
+            {
+                std::string secName = l->GetName();
+
+                if (secName == sec)
+                {
+                    l->Add(com);
+                }
+            }
+        }
+
 
         void Remove(Component* component) override {
             this->m_children.remove(std::shared_ptr<Component>(std::move(component)));
@@ -289,15 +259,7 @@ namespace CoreData
             }
         }
 
-        virtual void SetName(std::string name)
-        {
-            m_name = name;
-        }
-
-        virtual std::string GetName()
-        {
-            return m_name;
-        }
+        virtual std::list<std::shared_ptr<Component>> GetChildrenCopy() { return m_children; }
     };
 
 }

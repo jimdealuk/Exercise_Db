@@ -120,43 +120,56 @@ namespace ExercideDbUI
     class WorkoutBuilder
     {
     public:
-        virtual void BuildWorkout(CoreData::WorkoutBase* workout) = 0;
-        virtual void BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout) = 0;
-        virtual void BuildExerciseList(CoreData::ExDescription* ex) = 0;
+        virtual void BuildWorkout(std::string& workoutName) = 0;
+        virtual void BuildSections(std::string& workoutName, CoreData::Component* section) = 0;
+        virtual void BuildExerciseList(std::string& sectionName, CoreData::Component* ex) = 0;
     };
 
     class BuildWorkoutImpl :public WorkoutBuilder
     {
     private:
-        std::unique_ptr< std::vector<CoreData::WorkoutBase*>> m_workouts;
-        std::shared_ptr <ExerciseDbClass::ExerciseDb> m_exDb;
-
+        std::shared_ptr<CoreData::WorkoutComponent> m_workouts;
 
     public:
 
-        BuildWorkoutImpl() = default;
-        BuildWorkoutImpl(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver);
+        BuildWorkoutImpl();
+        BuildWorkoutImpl(BuildWorkoutImpl& b) = delete;
         ~BuildWorkoutImpl() = default;
 
-
-        virtual void BuildWorkout(CoreData::WorkoutBase* workout);
-        virtual void BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout);
-        virtual void BuildExerciseList(CoreData::ExDescription* ex);
+        virtual void BuildWorkout(std::string& workoutName);
+        virtual void BuildSections(std::string& workoutName, CoreData::Component* section);
+        virtual void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
     };
 
 
 
     class BuildFullWorkout :public BuildWorkoutImpl
     {
-        virtual void BuildWorkout(CoreData::Workout& workout);
-        virtual void BuildSections(CoreData::WorkoutSection& section, CoreData::WorkoutBase& workout);
-        virtual void BuildExerciseList(CoreData::ExDescription& ex);
+    private:
+        std::shared_ptr<BuildWorkoutImpl> m_builder;
+
+    private:
+        BuildFullWorkout() = default;
+        BuildFullWorkout(BuildFullWorkout& b) = delete;
+        ~BuildFullWorkout() = default;
+
+        void BuildWorkout(CoreData::Component& workout);
+        void BuildSections(CoreData::Component& section, CoreData::Component& workout);
+        void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
     };
 
     class BuildQuickWorkout :public BuildWorkoutImpl
     {
-        virtual void BuildWorkout(CoreData::QuickWorkout& workout);
-        virtual void BuildExerciseList(CoreData::ExDescription& ex);
+    private:
+        std::shared_ptr<BuildWorkoutImpl> m_builder;
+
+    private:
+        BuildQuickWorkout() = default;
+        BuildQuickWorkout(BuildQuickWorkout& b) = delete;
+        ~BuildQuickWorkout() = default;
+
+        void BuildWorkout(CoreData::Component& workout);
+        void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
     };
 
 }

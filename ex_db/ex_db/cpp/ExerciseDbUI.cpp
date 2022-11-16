@@ -288,33 +288,28 @@ namespace ExercideDbUI
 
 
 
-    BuildWorkoutImpl::BuildWorkoutImpl(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
+    BuildWorkoutImpl::BuildWorkoutImpl()
     {
-        m_exDb = std::move(receiver);
-        m_workouts = std::make_unique < std::vector<CoreData::WorkoutBase*>>();
+        m_workouts = std::make_shared<CoreData::WorkoutComponent>();
     }
 
-    void BuildWorkoutImpl::BuildWorkout(CoreData::WorkoutBase* workout)
+    void BuildWorkoutImpl::BuildWorkout(std::string& workoutName)
     {
-        // TODO - propogate error / not added condition
-        std::vector<CoreData::WorkoutBase* >::iterator it = std::find(begin(*m_workouts), end(*m_workouts), workout);
-        if (it == m_workouts->end())
+        m_workouts->SetName(workoutName);
+        m_workouts->SetCompType(CoreData::workoutName);
+    }
+
+    void BuildWorkoutImpl::BuildSections(std::string& workoutName, CoreData::Component* section)
+    {
+        if (workoutName == m_workouts->GetName())
         {
-            m_workouts->push_back(workout); // won't convert between inherited types : struct not class
+            m_workouts->Add(section);
         }
     }
 
-    void BuildWorkoutImpl::BuildSections(CoreData::WorkoutSection* section, CoreData::WorkoutBase* workout)
+    void BuildWorkoutImpl::BuildExerciseList(std::string& sectionName, CoreData::Component* ex)
     {
-        std::vector<CoreData::WorkoutBase* >::iterator it = std::find(begin(*m_workouts), end(*m_workouts), workout);
-        if (it != m_workouts->end())
-        {
-            int n = 0;
-        }
-    }
-
-    void BuildWorkoutImpl::BuildExerciseList(CoreData::ExDescription* ex)
-    {
+        m_workouts->AddExerciseToSection(sectionName, ex);
     }
 
 

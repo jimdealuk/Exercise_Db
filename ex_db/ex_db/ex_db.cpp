@@ -31,31 +31,60 @@ int main()
             std::shared_ptr<ExerciseDbClass::ExerciseDb> dbShared = std::move(db);
 
 // TO DELETE - CODE TO TEST Workout Builder(s)
-            std::shared_ptr < ExercideDbUI::BuildWorkoutImpl> bw = std::make_shared< ExercideDbUI::BuildWorkoutImpl>(dbShared);
+            std::shared_ptr < ExercideDbUI::BuildWorkoutImpl> bw = std::make_shared< ExercideDbUI::BuildWorkoutImpl>();
 
-            CoreData::Workout* w1 = new CoreData::Workout;
-            CoreData::WorkoutSection s2 = { "main" };
-            std::vector<CoreData::WorkoutSection> sections;
-            sections.push_back(s2);
-            w1->name = "jim";
-            w1->sections = sections;
+            std::string jim = { "jim" };
+            bw->BuildWorkout(jim);
 
-            CoreData::Workout* w2 = new CoreData::Workout;
-            w2->name = "bill";
+            CoreData::WorkoutComponent* sec1 = new CoreData::WorkoutComponent();
+            std::string warmup = { "warmup" };
+            sec1->SetName(warmup);
+            sec1->SetCompType(CoreData::sectionTags);
 
-            CoreData::Workout* w3 = new CoreData::Workout;
-            w3->name = "ted";
+            CoreData::WorkoutComponent* sec2 = new CoreData::WorkoutComponent();
+            std::string main = { "main" };
+            sec2->SetName(main);
+            sec2->SetCompType(CoreData::sectionTags);
 
-            bw->BuildWorkout(w1);
-            bw->BuildWorkout(w2);
-            bw->BuildWorkout(w3);
 
-            CoreData::WorkoutSection* section = new CoreData::WorkoutSection;
-            section->name = "warmup";
+            bw->BuildSections(jim, sec1);
+            bw->BuildSections(jim, sec2);
 
-            bw->BuildSections(section, w1);
 
-            int y = 0;
+            CoreData::WeightEx* ex1 = new CoreData::WeightEx();
+            std::string press = { "press" };
+            ex1->SetName(press);
+            ex1->SetCompType(CoreData::tagBase);
+            bw->BuildExerciseList(warmup, ex1);
+
+
+            CoreData::WeightEx* ex2 = new CoreData::WeightEx();
+            std::string clean = { "clean" };
+            ex2->SetName(clean);
+            ex2->SetCompType(CoreData::tagBase);
+            bw->BuildExerciseList(warmup, ex2);
+
+
+            CoreData::WeightEx* ex3 = new CoreData::WeightEx();
+            std::string squat = { "squat" };
+            ex3->SetName(squat);
+            ex3->SetCompType(CoreData::tagBase);
+            bw->BuildExerciseList(main, ex3);
+
+
+            CoreData::WorkoutComponent* sec3 = new CoreData::WorkoutComponent();
+            std::string stretch = { "stretch" };
+            sec3->SetName(stretch);
+            sec3->SetCompType(CoreData::sectionTags);
+            bw->BuildSections(jim, sec3);
+
+
+            CoreData::StretchEx* ex4 = new CoreData::StretchEx();
+            ex4->SetName(stretch);
+            ex4->SetCompType(CoreData::tagBase);
+            bw->BuildExerciseList(stretch, ex4);
+
+
 // DELETE TO HERE..
 
             if(dbShared)
