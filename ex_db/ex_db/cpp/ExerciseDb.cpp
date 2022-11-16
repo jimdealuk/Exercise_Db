@@ -87,6 +87,37 @@ namespace ExerciseDbClass
         return ret;
     }
 
+    /* GetExercisesForTag
+    *  Helper method - get list of exercises for a tag
+    */
+    bool ExerciseDb::GetExercisesForTag(std::string& tag, std::vector<std::string>& exercises)
+    {
+        bool ret = { false };
+
+        try
+        {
+            for (auto& t : *m_exercises)
+            {
+                std::vector<std::string> exTags = t.exTags;
+                auto it = std::find_if(exTags.begin(), exTags.end(), [tag](std::string& f) { return f == tag; });
+                if (it != exTags.end())
+                {
+                    exercises.push_back(t.exName);
+                    ret = true;
+                }
+
+            }
+
+        }
+        catch (...)
+        {
+            // ret already set
+        }
+        return ret;
+    }
+
+
+
     /* AddExercise
     *  Add an exercise to the exercise container
     *  Replace the exercise container in the database

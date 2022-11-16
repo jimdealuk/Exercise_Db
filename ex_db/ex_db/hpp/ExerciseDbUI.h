@@ -94,6 +94,20 @@ namespace ExercideDbUI
         void Execute() const override;
     };
 
+    /* GetExerciseForTagCommand class
+    *  This class handles getting a list of exercises for a tag
+    */
+    class GetExerciseForTagCommand : public Command {
+
+    private:
+        ExerciseDbClass::ExerciseDb* m_dataSource;
+
+    public:
+        GetExerciseForTagCommand(ExerciseDbClass::ExerciseDb* receiver);
+        void Execute() const override;
+    };
+
+
 
     /* Invoker class
     *  This class handles the user interface

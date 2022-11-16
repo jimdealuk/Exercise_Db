@@ -52,6 +52,9 @@ namespace ExerciseDbClass
         // Check whether an exercise or a tag already exists
         bool CheckExerciseExists(const std::string& exStr);
         bool CheckTagExists(const std::string& exStr);
+
+        // Helper method - get list of exercises for a tag
+        bool GetExercisesForTag(std::string& tag, std::vector<std::string>& exercises);
     };
 
 }

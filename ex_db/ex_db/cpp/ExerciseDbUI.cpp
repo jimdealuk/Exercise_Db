@@ -203,7 +203,57 @@ namespace ExercideDbUI
     }
 
 
-    Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver) 
+    GetExerciseForTagCommand::GetExerciseForTagCommand(ExerciseDbClass::ExerciseDb* receiver)
+        : m_dataSource(receiver)
+    {
+    }
+
+    /* Command to get a list of exercises for a tag
+    */
+    void GetExerciseForTagCommand::Execute() const {
+
+        try
+        {
+            std::cout << "Input new tag - fin to finish: \n";
+            bool stopAdding = { false };
+            std::string tag = { "" };
+            do
+            {
+                std::getline(std::cin, tag);
+            } while (tag.length() == 0);
+
+            if (tag == "fin")
+            {
+                stopAdding = true;
+            }
+
+            if (!stopAdding)
+            {
+                if (m_dataSource->CheckTagExists(tag))
+                {
+                    std::vector<std::string> exs;
+                    m_dataSource->GetExercisesForTag(tag, exs);
+
+                    for (auto& e : exs)
+                    {
+                        std::cout << e << "\n";
+                    }
+                }
+                else
+                {
+                    std::cout << "Tag does not exist\n";
+                }
+            }
+
+        }
+        catch (...)
+        {
+            std::cout << "Couldn't add exercise \n";
+        }
+    }
+
+
+    Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
     {
         m_exDb = std::move(receiver);
     }
@@ -220,21 +270,22 @@ namespace ExercideDbUI
         std::cout << "3: Add Tag \n";
         std::cout << "4: Add Exercise \n";
         std::cout << "5: save Exercises to file \n";
-        std::cout << "6: Exit \n";
+        std::cout << "6: list exercises for tag \n";
+        std::cout << "7: Exit \n";
 
         std::cin >> opt;
         do {
 
             do {
-                if ((opt < 1) || (opt > 6))
+                if ((opt < 1) || (opt > 7))
                 {
                     std::cin.clear();
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                    std::cout << "Invalid Entry - please enter number between 1 & 6\n";
+                    std::cout << "Invalid Entry - please enter number between 1 & 7\n";
                     std::cin >> opt;
                 }
-            } while ((opt < 1) || (opt > 6));
+            } while ((opt < 1) || (opt > 7));
 
             switch (opt)
             {
@@ -273,6 +324,12 @@ namespace ExercideDbUI
 
             }
             case 6:
+            {
+                std::unique_ptr<ExercideDbUI::GetExerciseForTagCommand> stc = std::make_unique<ExercideDbUI::GetExerciseForTagCommand>(m_exDb.get());
+                stc->Execute();
+                break;
+            }
+            case 7:
             default:
             {
                 exitMenu = true;
