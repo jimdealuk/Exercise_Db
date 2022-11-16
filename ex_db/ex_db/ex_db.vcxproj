@@ -131,6 +131,7 @@
     <ClCompile Include="cpp\ExerciseDbUI.cpp" />
     <ClCompile Include="cpp\ExerciseDb.cpp" />
     <ClCompile Include="cpp\ExerciseDbFileHandler.cpp" />
+    <ClCompile Include="cpp\WorkoutBuilder.cpp" />
     <ClCompile Include="ex_db.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="hpp\ExerciseDb.h" />
     <ClInclude Include="hpp\ExerciseDbFileHandler.h" />
     <ClInclude Include="hpp\ExerciseDbHandlerBase.h" />
+    <ClInclude Include="hpp\WorkoutBuilder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

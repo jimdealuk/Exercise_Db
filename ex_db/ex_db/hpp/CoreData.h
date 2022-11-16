@@ -4,6 +4,7 @@
 #define CoreData_H
 
 #include <string>
+#include <vector>
 #include <list>
 
 
