@@ -27,8 +27,13 @@ namespace ExerciseDbHandling
         virtual void GetExDb(std::vector<CoreData::BaseEx>& exDbHandle) = 0;
         virtual void GetExTags(std::vector<std::string>& tagsHandle) = 0;
 
+        virtual void GetWorkouts(CoreData::WorkoutComponent& workoutHandle) = 0;
+
+
         virtual void SetExTags(std::unique_ptr<std::vector<std::string>> tags) = 0;
         virtual void SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags) = 0;
+
+        virtual void SetWorkouts(std::unique_ptr<CoreData::WorkoutComponent> workouts) = 0;
 
         virtual ~ExerciseDbHandlerBase() = default;
     };

@@ -451,6 +451,12 @@ namespace ExerciseDbHandling
         tagsHandle = *(m_tags.get());
     }
 
+    void ExerciseDbFileHandler::GetWorkouts(CoreData::WorkoutComponent& workoutHandle)
+    {
+        workoutHandle = *(m_workoutComponents.get());
+    }
+
+
     // replace the current tags container with the one in the parameter
     void ExerciseDbFileHandler::SetExTags(std::unique_ptr<std::vector<std::string>> tags)
     {
@@ -461,6 +467,12 @@ namespace ExerciseDbHandling
     void ExerciseDbFileHandler::SetExercises(std::unique_ptr<std::vector<CoreData::BaseEx>> tags)
     {
         m_exercises = std::move(tags);
+    }
+
+
+    void ExerciseDbFileHandler::SetWorkouts(std::unique_ptr<CoreData::WorkoutComponent> workouts)
+    {
+        m_workoutComponents = std::move(workouts);
     }
 
 }

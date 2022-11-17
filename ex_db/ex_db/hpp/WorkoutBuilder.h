@@ -5,7 +5,6 @@
 
 #include <string>
 
-
 #include "CoreData.h"
 
 
@@ -19,10 +18,11 @@ namespace WorkoutBuilder
         virtual void BuildExerciseList(std::string& sectionName, CoreData::Component* ex) = 0;
     };
 
+
     class BuildWorkoutImpl :public WorkoutBuilder
     {
     private:
-        std::shared_ptr<CoreData::WorkoutComponent> m_workouts;
+        CoreData::WorkoutComponent* m_workouts;
 
     public:
 
@@ -33,10 +33,12 @@ namespace WorkoutBuilder
         virtual void BuildWorkout(std::string& workoutName);
         virtual void BuildSections(std::string& workoutName, CoreData::Component* section);
         virtual void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
+
+        CoreData::WorkoutComponent* GetCreatedWorkout();
     };
 
 
-
+    // TODO - do we need this : use BuildWorkoutImpl directly (?)
     class BuildFullWorkout :public BuildWorkoutImpl
     {
     private:
@@ -65,10 +67,6 @@ namespace WorkoutBuilder
         void BuildWorkout(CoreData::Component& workout);
         void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
     };
-
-
-
-
 }
 
 

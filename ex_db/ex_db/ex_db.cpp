@@ -31,7 +31,7 @@ int main()
         {
             std::shared_ptr<ExerciseDbClass::ExerciseDb> dbShared = std::move(db);
 
-// TO DELETE - CODE TO TEST Workout Builder(s)
+/* TO DELETE - CODE TO TEST Workout Builder(s)
             std::shared_ptr < WorkoutBuilder::BuildWorkoutImpl> bw = std::make_shared< WorkoutBuilder::BuildWorkoutImpl>();
 
             std::string jim = { "jim" };
@@ -87,6 +87,7 @@ int main()
 
 
 // DELETE TO HERE..
+*/
 
             if(dbShared)
             {

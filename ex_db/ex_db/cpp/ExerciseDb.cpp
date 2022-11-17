@@ -24,11 +24,14 @@ namespace ExerciseDbClass
     {
         m_exercises = std::make_unique< std::vector<CoreData::BaseEx> >();
         m_tags = std::make_unique< std::vector<std::string> >();
+        m_workouts = std::make_unique<CoreData::WorkoutComponent>();
 
         bool ret = m_exercisesBase->ReadExDb();
 
         m_exercisesBase->GetExDb(*(m_exercises.get()));
         m_exercisesBase->GetExTags(*(m_tags.get()));
+
+        m_exercisesBase->GetWorkouts(*(m_workouts.get()));
 
         return ret;
     }
@@ -198,5 +201,13 @@ namespace ExerciseDbClass
     {
         m_exercisesBase->GetExDb(exDbHandle);
     }
+
+    void ExerciseDb::AddWorkout(CoreData::WorkoutComponent* workout)
+    {
+        m_workouts->GetChildrenCopy().front()->Add(workout);
+
+        m_exercisesBase->SetWorkouts(std::move(m_workouts));
+    }
+
 }
 

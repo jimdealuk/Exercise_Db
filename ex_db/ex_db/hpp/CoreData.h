@@ -141,7 +141,7 @@ namespace CoreData
         int exReps = 0;
 
         void SendToFile(std::fstream& fs) override
-            { fs << exSets << " " << exWeight << " " << exReps; }
+            { fs << m_name << " " << exSets << " " << exWeight << " " << exReps; }
 
     };
 

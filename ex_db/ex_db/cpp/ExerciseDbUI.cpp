@@ -110,8 +110,8 @@ namespace ExercideDbUI
 
     /* Command to add an exercise in the exercise container
     */
-    void AddExerciseCommand::Execute() const  {
-
+    void AddExerciseCommand::Execute() const  
+    {
         try
         {
             std::vector<CoreData::BaseEx> exs;
@@ -210,11 +210,11 @@ namespace ExercideDbUI
 
     /* Command to get a list of exercises for a tag
     */
-    void GetExerciseForTagCommand::Execute() const {
-
+    void GetExerciseForTagCommand::Execute() const 
+    {
         try
         {
-            std::cout << "Input new tag - fin to finish: \n";
+            std::cout << "Input tag name - fin to finish: \n";
             bool stopAdding = { false };
             std::string tag = { "" };
             do
@@ -248,9 +248,122 @@ namespace ExercideDbUI
         }
         catch (...)
         {
-            std::cout << "Couldn't add exercise \n";
+            std::cout << "Couldn't get exercise list\n";
         }
     }
+
+
+    CreateWorkoutCommand::CreateWorkoutCommand(ExerciseDbClass::ExerciseDb* receiver, WorkoutBuilder::BuildWorkoutImpl* workoutBuilder)
+        : m_dataSource(receiver), m_workoutBuilder(workoutBuilder)
+    {
+
+    }
+    void CreateWorkoutCommand::Execute() const
+    {
+        try
+        {
+            std::cout << "Create new workout name - fin to finish: \n";
+            bool stopAdding = { false };
+            std::string name = { "" };
+            do
+            {
+                std::getline(std::cin, name);
+            } while (name.length() == 0);
+
+            if (name == "fin")
+            {
+                stopAdding = true;
+            }
+
+
+            if (!stopAdding)
+            {
+                do
+                {
+                    m_workoutBuilder->BuildWorkout(name);
+
+                    std::cout << "Create new section name - fin to finish: \n";
+                    std::string sectionName = { "" };
+                    do
+                    {
+                        std::getline(std::cin, sectionName);
+                    } while (sectionName.length() == 0);
+
+                    if (sectionName == "fin")
+                    {
+                        stopAdding = true;
+                    }
+
+                    if (!stopAdding)
+                    {
+                        CoreData::WorkoutComponent* section = new CoreData::WorkoutComponent;
+                        section->SetName(sectionName);
+                        section->SetCompType(CoreData::sectionTags);
+                        m_workoutBuilder->BuildSections(name, section);
+
+                        do
+                        {
+
+                            std::cout << "Add exercise to section created - fin to finish: \n";
+                            std::string exName = { "" };
+                            do
+                            {
+                                std::getline(std::cin, exName);
+                            } while (exName.length() == 0);
+
+                            if (exName == "fin")
+                            {
+                                stopAdding = true;
+                            }
+
+                            if (!stopAdding)
+                            {
+                                CoreData::WeightEx* ex1 = new CoreData::WeightEx();
+                                ex1->SetName(exName);
+                                ex1->SetCompType(CoreData::tagBase);
+                                m_workoutBuilder->BuildExerciseList(sectionName, ex1);
+                            }
+                        } while (!stopAdding);
+                    }
+
+                } while (!stopAdding);
+
+                m_dataSource->AddWorkout(m_workoutBuilder->GetCreatedWorkout());
+/*
+// TEST CODE - TODO - make workout builder use unique / shared ptr (?)
+                CoreData::WorkoutComponent* sec1 = new CoreData::WorkoutComponent();
+                std::string tom = { "tom" };
+                sec1->SetName(tom);
+                sec1->SetCompType(CoreData::workoutName);
+
+                CoreData::WorkoutComponent* sec2 = new CoreData::WorkoutComponent();
+                std::string warmup = { "warmup" };
+                sec2->SetName(warmup);
+                sec2->SetCompType(CoreData::sectionTags);
+
+                CoreData::WeightEx* ex1 = new CoreData::WeightEx();
+                std::string press = { "press" };
+                ex1->SetName(press);
+                ex1->SetCompType(CoreData::tagBase);
+
+                sec2->AddExerciseToSection(warmup, ex1);
+
+                sec1->Add(sec2);
+
+
+                m_dataSource->AddWorkout(sec1);
+*/
+
+
+            }
+        }
+        catch (...)
+        {
+            std::cout << "Couldn't add workout \n";
+        }
+    }
+
+
 
 
     Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
@@ -271,21 +384,23 @@ namespace ExercideDbUI
         std::cout << "4: Add Exercise \n";
         std::cout << "5: save Exercises to file \n";
         std::cout << "6: list exercises for tag \n";
-        std::cout << "7: Exit \n";
+        std::cout << "7: Create workout \n";
+
+        std::cout << "8: Exit \n";
 
         std::cin >> opt;
         do {
 
             do {
-                if ((opt < 1) || (opt > 7))
+                if ((opt < 1) || (opt > 8))
                 {
                     std::cin.clear();
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                    std::cout << "Invalid Entry - please enter number between 1 & 7\n";
+                    std::cout << "Invalid Entry - please enter number between 1 & 8\n";
                     std::cin >> opt;
                 }
-            } while ((opt < 1) || (opt > 7));
+            } while ((opt < 1) || (opt > 8));
 
             switch (opt)
             {
@@ -330,6 +445,13 @@ namespace ExercideDbUI
                 break;
             }
             case 7:
+            {
+                WorkoutBuilder::BuildWorkoutImpl* wb = new WorkoutBuilder::BuildWorkoutImpl();
+                std::unique_ptr<ExercideDbUI::CreateWorkoutCommand> stc = std::make_unique<ExercideDbUI::CreateWorkoutCommand>(m_exDb.get(), wb);
+                stc->Execute();
+                break;
+            }
+            case 8:
             default:
             {
                 exitMenu = true;

@@ -29,6 +29,8 @@ namespace ExerciseDbClass
         // a handle to the exercise database storage
         std::unique_ptr< ExerciseDbHandling::ExerciseDbHandlerBase> m_exercisesBase;
 
+        std::unique_ptr<CoreData::WorkoutComponent> m_workouts;
+
     public:
         ExerciseDb() = default;
         ExerciseDb(std::unique_ptr<ExerciseDbHandling::ExerciseDbHandlerBase> dbHandle);
@@ -55,6 +57,9 @@ namespace ExerciseDbClass
 
         // Helper method - get list of exercises for a tag
         bool GetExercisesForTag(std::string& tag, std::vector<std::string>& exercises);
+
+        // Add workout to workouts database
+        void AddWorkout(CoreData::WorkoutComponent* workout);
     };
 
 }

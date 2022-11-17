@@ -4,6 +4,8 @@
 #define ExercideDbUI_H
 
 #include "ExerciseDb.h"
+#include "WorkoutBuilder.h"
+
 
 /* Creates Application "UI"
 *  all commands to interact with exercise database
@@ -107,6 +109,19 @@ namespace ExercideDbUI
         void Execute() const override;
     };
 
+    /* CreateWorkoutCommand class
+    *  This class handles getting creating a workout
+    */
+    class CreateWorkoutCommand : public Command {
+
+    private:
+        ExerciseDbClass::ExerciseDb* m_dataSource;
+        WorkoutBuilder::BuildWorkoutImpl* m_workoutBuilder;
+
+    public:
+        CreateWorkoutCommand(ExerciseDbClass::ExerciseDb* receiver, WorkoutBuilder::BuildWorkoutImpl* workoutBuilder);
+        void Execute() const override;
+    };
 
 
     /* Invoker class

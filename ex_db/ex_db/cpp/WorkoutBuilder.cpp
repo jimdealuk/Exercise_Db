@@ -10,7 +10,7 @@ namespace WorkoutBuilder
 
     BuildWorkoutImpl::BuildWorkoutImpl()
     {
-        m_workouts = std::make_shared<CoreData::WorkoutComponent>();
+        m_workouts = new CoreData::WorkoutComponent();
     }
 
     void BuildWorkoutImpl::BuildWorkout(std::string& workoutName)
@@ -31,6 +31,12 @@ namespace WorkoutBuilder
     {
         m_workouts->AddExerciseToSection(sectionName, ex);
     }
+
+    CoreData::WorkoutComponent* BuildWorkoutImpl::GetCreatedWorkout()
+    {
+        return m_workouts;
+    }
+
 
 }
 
