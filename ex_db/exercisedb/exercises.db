@@ -19,4 +19,6 @@ row
 Workouts
 (Jim:(Section:[Warmup:(cycle)][Main:(press)(deadlift)(curl)]))
 (Fred:(Section:[Warmup:(row)][Main:(squat)(deadlift)(flye)]))
+(tom:(Section:[warmup:(press 0 0 0)]))
+(gary:(Section:[main:(squat 0 0 0)(chin 0 0 0)]))
 }
