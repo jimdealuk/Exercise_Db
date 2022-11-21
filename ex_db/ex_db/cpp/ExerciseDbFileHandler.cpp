@@ -70,6 +70,7 @@ namespace ExerciseDbHandling
             CoreData::WorkoutComponent* topWorkout = new CoreData::WorkoutComponent();
             topWorkout->SetName(CoreData::topName);
 
+
             if (fs.is_open())
             {
                 // if more data left in the file...
@@ -170,7 +171,7 @@ namespace ExerciseDbHandling
                 using std::begin, std::end;
                 m_exercises->insert(end(*m_exercises), begin(tempExcerises), end(tempExcerises));
                 m_tags->insert(end(*m_tags), begin(tempTags), end(tempTags));
-                m_workoutComponents->Add(std::move(topWorkout));
+                m_workoutComponents->ResetComponent(*topWorkout);
 
                 // if we're here - the exercise data *should* have been read in to the relevant container
                 ret = true;
@@ -320,20 +321,15 @@ namespace ExerciseDbHandling
             // set up the "header" for the sections
             fs << CoreData::dataIn << CoreData::lineSep << CoreData::workoutTags << CoreData::lineSep;
 
-            std::list<std::shared_ptr<CoreData::Component>> wc = m_workoutComponents->GetChildrenCopy();
+            std::list<std::shared_ptr<CoreData::Component>> wcNext = m_workoutComponents->GetChildrenCopy();
 
-            if (wc.size() == 1) // there should only be one component at this level
+            for (auto& workouts : wcNext)
             {
-                std::list<std::shared_ptr<CoreData::Component>> wcNext = wc.front()->GetChildrenCopy();
-
-                for (auto& workouts : wcNext)
-                {
-                    fs << CoreData::sepIn; // (<name>:(
-                    workouts->SendToFile(fs);
-                    fs << CoreData::sepOut;
-                    fs << CoreData::sepOut;
-                    fs << CoreData::lineSep;
-                }
+                fs << CoreData::sepIn; // (<name>:(
+                workouts->SendToFile(fs);
+                fs << CoreData::sepOut;
+                fs << CoreData::sepOut;
+                fs << CoreData::lineSep;
             }
 
             fs << CoreData::dataOut;

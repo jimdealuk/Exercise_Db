@@ -204,9 +204,12 @@ namespace ExerciseDbClass
 
     void ExerciseDb::AddWorkout(CoreData::WorkoutComponent* workout)
     {
-        m_workouts->GetChildrenCopy().front()->Add(workout);
-
+        m_workouts->Add(std::move(workout));
         m_exercisesBase->SetWorkouts(std::move(m_workouts));
+
+        m_workouts = std::make_unique<CoreData::WorkoutComponent>();
+        m_exercisesBase->GetWorkouts(*(m_workouts.get()));
+
     }
 
 }

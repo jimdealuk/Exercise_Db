@@ -188,6 +188,26 @@ namespace CoreData
 
 
     public:
+        WorkoutComponent() = default;
+
+        WorkoutComponent(WorkoutComponent& wc):
+            Component()
+        {
+            m_name = wc.GetName();
+            m_componentType = wc.GetCompType();
+            m_children = wc.GetChildrenCopy();
+        }
+
+        WorkoutComponent ResetComponent(WorkoutComponent& wc)
+        {
+            m_name = wc.GetName();
+            m_componentType = wc.GetCompType();
+            m_children = wc.GetChildrenCopy();
+            return *this;
+        }
+
+
+
         void Add(Component* component) override {
             this->m_children.push_back(std::shared_ptr<Component>(std::move(component)));
         }
