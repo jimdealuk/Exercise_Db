@@ -58,6 +58,9 @@ namespace ExerciseDbClass
         // Helper method - get list of exercises for a tag
         bool GetExercisesForTag(std::string& tag, std::vector<std::string>& exercises);
 
+        // Get list of workouts
+        void GetWorkouts(CoreData::WorkoutComponent& workoutHandle);
+
         // Add workout to workouts database
         void AddWorkout(CoreData::WorkoutComponent* workout);
     };

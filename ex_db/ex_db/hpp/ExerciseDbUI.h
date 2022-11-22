@@ -123,6 +123,19 @@ namespace ExercideDbUI
         void Execute() const override;
     };
 
+    /* ListWorkoutsCommand class
+    *  This class handles getting creating a list of stored workouts
+    */
+    class ListWorkoutsCommand : public Command {
+
+    private:
+        ExerciseDbClass::ExerciseDb* m_dataSource;
+
+    public:
+        ListWorkoutsCommand(ExerciseDbClass::ExerciseDb* receiver);
+        void Execute() const override;
+    };
+
 
     /* Invoker class
     *  This class handles the user interface

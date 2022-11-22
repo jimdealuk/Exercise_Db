@@ -447,6 +447,7 @@ namespace ExerciseDbHandling
         tagsHandle = *(m_tags.get());
     }
 
+    // Get a list of workouts from workouts store
     void ExerciseDbFileHandler::GetWorkouts(CoreData::WorkoutComponent& workoutHandle)
     {
         workoutHandle = *(m_workoutComponents.get());
@@ -465,7 +466,7 @@ namespace ExerciseDbHandling
         m_exercises = std::move(tags);
     }
 
-
+    // replace the current workouts container with the one in the parameter
     void ExerciseDbFileHandler::SetWorkouts(std::unique_ptr<CoreData::WorkoutComponent> workouts)
     {
         m_workoutComponents = std::move(workouts);

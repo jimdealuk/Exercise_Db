@@ -202,6 +202,13 @@ namespace ExerciseDbClass
         m_exercisesBase->GetExDb(exDbHandle);
     }
 
+
+    void ExerciseDb::GetWorkouts(CoreData::WorkoutComponent& workoutHandle)
+    {
+        m_exercisesBase->GetWorkouts(workoutHandle);
+    }
+
+
     void ExerciseDb::AddWorkout(CoreData::WorkoutComponent* workout)
     {
         m_workouts->Add(std::move(workout));

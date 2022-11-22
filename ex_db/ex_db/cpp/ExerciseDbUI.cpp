@@ -258,6 +258,10 @@ namespace ExercideDbUI
     {
 
     }
+
+    /* Command to create a workout
+    * This creates a workout with a single section & multiple (weight) exercises
+    */
     void CreateWorkoutCommand::Execute() const
     {
         try
@@ -329,31 +333,6 @@ namespace ExercideDbUI
                 } while (!stopAdding);
 
                 m_dataSource->AddWorkout(m_workoutBuilder->GetCreatedWorkout());
-/*
-// TEST CODE - TODO - make workout builder use unique / shared ptr (?)
-                CoreData::WorkoutComponent* sec1 = new CoreData::WorkoutComponent();
-                std::string tom = { "tom" };
-                sec1->SetName(tom);
-                sec1->SetCompType(CoreData::workoutName);
-
-                CoreData::WorkoutComponent* sec2 = new CoreData::WorkoutComponent();
-                std::string warmup = { "warmup" };
-                sec2->SetName(warmup);
-                sec2->SetCompType(CoreData::sectionTags);
-
-                CoreData::WeightEx* ex1 = new CoreData::WeightEx();
-                std::string press = { "press" };
-                ex1->SetName(press);
-                ex1->SetCompType(CoreData::tagBase);
-
-                sec2->AddExerciseToSection(warmup, ex1);
-
-                sec1->Add(sec2);
-
-
-                m_dataSource->AddWorkout(sec1);
-*/
-
 
             }
         }
@@ -363,7 +342,35 @@ namespace ExercideDbUI
         }
     }
 
+    ListWorkoutsCommand::ListWorkoutsCommand(ExerciseDbClass::ExerciseDb* receiver)
+        : m_dataSource(receiver)
+    {
 
+    }
+
+    /* Command to get a list of workout names
+    */
+    void ListWorkoutsCommand::Execute() const
+    {
+        try
+        {
+            std::cout << "List of current workouts \n";
+            std::string tag = { "" };
+            CoreData::WorkoutComponent wc;
+            m_dataSource->GetWorkouts(wc);
+
+            std::list<std::shared_ptr<CoreData::Component>> c = wc.GetChildrenCopy();
+
+            for (auto& w : c)
+            {
+                std::cout << w->GetName() << "\n";
+            }
+        }
+        catch (...)
+        {
+            std::cout << "Couldn't get exercise list\n";
+        }
+    }
 
 
     Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
@@ -382,25 +389,26 @@ namespace ExercideDbUI
         std::cout << "2: List Tags\n";
         std::cout << "3: Add Tag \n";
         std::cout << "4: Add Exercise \n";
-        std::cout << "5: save Exercises to file \n";
-        std::cout << "6: list exercises for tag \n";
-        std::cout << "7: Create workout \n";
+        std::cout << "5: Save Exercises to File \n";
+        std::cout << "6: List Exercises for Tag \n";
+        std::cout << "7: List Workouts \n";
+        std::cout << "8: Create Workout \n";
 
-        std::cout << "8: Exit \n";
+        std::cout << "9: Exit \n";
 
         std::cin >> opt;
         do {
 
             do {
-                if ((opt < 1) || (opt > 8))
+                if ((opt < 1) || (opt > 9))
                 {
                     std::cin.clear();
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                    std::cout << "Invalid Entry - please enter number between 1 & 8\n";
+                    std::cout << "Invalid Entry - please enter number between 1 & 9\n";
                     std::cin >> opt;
                 }
-            } while ((opt < 1) || (opt > 8));
+            } while ((opt < 1) || (opt > 9));
 
             switch (opt)
             {
@@ -446,12 +454,18 @@ namespace ExercideDbUI
             }
             case 7:
             {
+                std::unique_ptr<ExercideDbUI::ListWorkoutsCommand> stc = std::make_unique<ExercideDbUI::ListWorkoutsCommand>(m_exDb.get());
+                stc->Execute();
+                break;
+            }
+            case 8:
+            {
                 WorkoutBuilder::BuildWorkoutImpl* wb = new WorkoutBuilder::BuildWorkoutImpl();
                 std::unique_ptr<ExercideDbUI::CreateWorkoutCommand> stc = std::make_unique<ExercideDbUI::CreateWorkoutCommand>(m_exDb.get(), wb);
                 stc->Execute();
                 break;
             }
-            case 8:
+            case 9:
             default:
             {
                 exitMenu = true;
