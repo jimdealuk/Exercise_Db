@@ -203,12 +203,15 @@ namespace ExerciseDbClass
     }
 
 
+    // Get a list of workouts
     void ExerciseDb::GetWorkouts(CoreData::WorkoutComponent& workoutHandle)
     {
         m_exercisesBase->GetWorkouts(workoutHandle);
     }
 
-
+    // Add workout to workout store
+    // Currently not anticipating hundreds of workouts
+    // so just replace & retrieve whole store
     void ExerciseDb::AddWorkout(CoreData::WorkoutComponent* workout)
     {
         m_workouts->Add(std::move(workout));

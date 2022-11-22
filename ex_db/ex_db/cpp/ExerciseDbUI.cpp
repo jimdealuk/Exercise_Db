@@ -355,7 +355,6 @@ namespace ExercideDbUI
         try
         {
             std::cout << "List of current workouts \n";
-            std::string tag = { "" };
             CoreData::WorkoutComponent wc;
             m_dataSource->GetWorkouts(wc);
 
