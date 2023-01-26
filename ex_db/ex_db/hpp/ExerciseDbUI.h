@@ -137,6 +137,20 @@ namespace ExercideDbUI
     };
 
 
+    /* RemoveTagFromTagDbCommand class
+    *  This class handles removing a tag from the tag db
+    */
+    class RemoveTagFromTagDbCommand : public Command {
+
+    private:
+        ExerciseDbClass::ExerciseDb* m_dataSource;
+
+    public:
+        RemoveTagFromTagDbCommand(ExerciseDbClass::ExerciseDb* receiver);
+        void Execute() const override;
+    };
+
+
     /* Invoker class
     *  This class handles the user interface
     *  It - gives options on adding and listing tags & exercises to the

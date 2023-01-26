@@ -222,5 +222,51 @@ namespace ExerciseDbClass
 
     }
 
+    bool ExerciseDb::RemoveTagFromTagDatabase(std::string tag)
+    {
+        bool ret = { false };
+
+        try
+        {
+            std::locale loc;
+            std::string exTag = { "" };
+            for (auto elem : tag)
+            {
+                char c = std::tolower(elem, loc);
+                if (isalpha(c))
+                {
+                    exTag.append(1, c);
+                }
+            }
+
+            auto it = std::find(m_tags->begin(), m_tags->end(), exTag);
+            if (it != m_tags->end())
+            {
+                m_tags->erase(it);
+
+                m_exercisesBase->SetExTags(std::move(m_tags));
+
+                m_tags = std::make_unique< std::vector<std::string> >();
+                m_exercisesBase->GetExTags(*(m_tags.get()));
+
+                ret = true;
+            }
+            else
+            {
+                ret = false;
+            }
+        }
+        catch (...)
+        {
+            // ret already set
+        }
+
+
+
+
+        return ret;
+    }
+
+
 }
 

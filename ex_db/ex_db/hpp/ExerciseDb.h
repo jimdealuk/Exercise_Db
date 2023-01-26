@@ -47,6 +47,8 @@ namespace ExerciseDbClass
 
         // Add a new tag to the tags database
         bool AddTag(const std::string& tag);
+        // Remove Tag from tag database
+        bool RemoveTagFromTagDatabase(std::string tag);
 
         // Add a new exercise to the exercise database
         bool AddExercise(const CoreData::BaseEx& ex);
@@ -54,6 +56,7 @@ namespace ExerciseDbClass
         // Check whether an exercise or a tag already exists
         bool CheckExerciseExists(const std::string& exStr);
         bool CheckTagExists(const std::string& exStr);
+
 
         // Helper method - get list of exercises for a tag
         bool GetExercisesForTag(std::string& tag, std::vector<std::string>& exercises);

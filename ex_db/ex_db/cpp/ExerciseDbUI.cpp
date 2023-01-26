@@ -282,53 +282,64 @@ namespace ExercideDbUI
 
             if (!stopAdding)
             {
+                m_workoutBuilder->BuildWorkout(name);
+
                 do
                 {
-                    m_workoutBuilder->BuildWorkout(name);
+                    bool stopAddingSection = { false };
 
-                    std::cout << "Create new section name - fin to finish: \n";
-                    std::string sectionName = { "" };
                     do
                     {
-                        std::getline(std::cin, sectionName);
-                    } while (sectionName.length() == 0);
+                        bool stopAddingExercise = { false };
 
-                    if (sectionName == "fin")
-                    {
-                        stopAdding = true;
-                    }
-
-                    if (!stopAdding)
-                    {
-                        CoreData::WorkoutComponent* section = new CoreData::WorkoutComponent;
-                        section->SetName(sectionName);
-                        section->SetCompType(CoreData::sectionTags);
-                        m_workoutBuilder->BuildSections(name, section);
-
+                        std::cout << "Section name - fin to finish: \n";
+                        std::string sectionName = { "" };
                         do
                         {
+                            std::getline(std::cin, sectionName);
+                        } while (sectionName.length() == 0);
 
-                            std::cout << "Add exercise to section created - fin to finish: \n";
-                            std::string exName = { "" };
+                        if (sectionName == "fin")
+                        {
+                            stopAddingSection = true;
+                            stopAdding = true;
+                        }
+
+                        if (!stopAddingSection)
+                        {
+                            CoreData::WorkoutComponent* section = new CoreData::WorkoutComponent;
+                            section->SetName(sectionName);
+                            section->SetCompType(CoreData::sectionTags);
+                            m_workoutBuilder->BuildSections(name, section);
+
                             do
                             {
-                                std::getline(std::cin, exName);
-                            } while (exName.length() == 0);
 
-                            if (exName == "fin")
-                            {
-                                stopAdding = true;
-                            }
+                                std::cout << "Add exercise to section created - fin to finish: \n";
+                                std::string exName = { "" };
+                                do
+                                {
+                                    std::getline(std::cin, exName);
+                                } while (exName.length() == 0);
 
-                            if (!stopAdding)
-                            {
-                                CoreData::WeightEx* ex1 = new CoreData::WeightEx();
-                                ex1->SetName(exName);
-                                ex1->SetCompType(CoreData::tagBase);
-                                m_workoutBuilder->BuildExerciseList(sectionName, ex1);
-                            }
-                        } while (!stopAdding);
-                    }
+                                if (exName == "fin")
+                                {
+                                    stopAddingExercise = true;
+                                }
+
+                                if (!stopAddingExercise)
+                                {
+                                    CoreData::WeightEx* ex1 = new CoreData::WeightEx();
+                                    ex1->SetName(exName);
+                                    ex1->SetCompType(CoreData::tagBase);
+                                    m_workoutBuilder->BuildExerciseList(sectionName, ex1);
+                                }
+                            } while (!stopAddingExercise);
+                        }
+
+
+                    } while (!stopAddingSection);
+
 
                 } while (!stopAdding);
 
@@ -370,6 +381,34 @@ namespace ExercideDbUI
             std::cout << "Couldn't get exercise list\n";
         }
     }
+
+    RemoveTagFromTagDbCommand::RemoveTagFromTagDbCommand(ExerciseDbClass::ExerciseDb* receiver)
+        : m_dataSource(receiver)
+    {
+    }
+
+    /* Command to get a list of exercises for a tag
+    */
+    void RemoveTagFromTagDbCommand::Execute() const
+    {
+        // first of all list the current tags
+        std::cout << "List of current tags\n";
+        std::vector<std::string> tags;
+        m_dataSource->GetExTags(tags);
+        for (auto tg : tags)
+        {
+            std::cout << tg << std::endl;
+        }
+
+        // now - MANUALLY - enter tag to delete...
+
+        // ... the : remove the tag from the tags database...
+
+
+
+    }
+
+
 
 
     Invoker::Invoker(std::shared_ptr<ExerciseDbClass::ExerciseDb> receiver)
