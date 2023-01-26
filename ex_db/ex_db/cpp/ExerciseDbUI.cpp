@@ -391,6 +391,7 @@ namespace ExercideDbUI
     */
     void RemoveTagFromTagDbCommand::Execute() const
     {
+        // test commit - extensions
         // first of all list the current tags
         std::cout << "List of current tags\n";
         std::vector<std::string> tags;
