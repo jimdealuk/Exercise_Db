@@ -10,6 +10,16 @@
 
 namespace WorkoutBuilder
 {
+
+    /* Interface Class : WorkoutBuilder
+    * Interface for a class to build workouts out of workout sections.
+    * This interface uses the CoreData::Component class in order to
+    * create / build up workouts.
+    * 
+    * A workout has a name and a list of sections (CoreData::Component)
+    * A section has a name and a list of exercises (CoreData::Component)
+    * An exercise has a name and a number of attributes
+    */
     class WorkoutBuilder
     {
     public:
@@ -19,6 +29,13 @@ namespace WorkoutBuilder
     };
 
 
+    /* Class : BuildWorkoutImpl
+    *  Implementation of WorkoutBuilder
+    *  Base case of building a workout up
+    *  Create & name a workout
+    *  Add section(s) to a workout
+    *  Add exercise(s) to a section
+    */
     class BuildWorkoutImpl :public WorkoutBuilder
     {
     private:
@@ -38,7 +55,10 @@ namespace WorkoutBuilder
     };
 
 
-    // TODO - do we need this : use BuildWorkoutImpl directly (?)
+    /* Class : BuildFullWorkout
+    *  Use BuildWorkoutImpl to build a workout that contains
+    *  A "default" workout, containing warmups, exercises and stretches
+    */
     class BuildFullWorkout :public BuildWorkoutImpl
     {
     private:
@@ -54,15 +74,20 @@ namespace WorkoutBuilder
         void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);
     };
 
-    class BuildQuickWorkout :public BuildWorkoutImpl
+    /* Class : BuildRehabWorkout
+    *  Use BuildWorkoutImpl to build a workout that contains
+    *  a cut down workout with no sections.
+    * for example: this could be used to contain only rehab exercises
+    */
+    class BuildRehabWorkout :public BuildWorkoutImpl
     {
     private:
         std::shared_ptr<BuildWorkoutImpl> m_builder;
 
     private:
-        BuildQuickWorkout() = default;
-        BuildQuickWorkout(BuildQuickWorkout& b) = delete;
-        ~BuildQuickWorkout() = default;
+        BuildRehabWorkout() = default;
+        BuildRehabWorkout(BuildRehabWorkout& b) = delete;
+        ~BuildRehabWorkout() = default;
 
         void BuildWorkout(CoreData::Component& workout);
         void BuildExerciseList(std::string& sectionName, CoreData::Component* ex);

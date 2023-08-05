@@ -70,7 +70,6 @@ namespace ExerciseDbHandling
             CoreData::WorkoutComponent* topWorkout = new CoreData::WorkoutComponent();
             topWorkout->SetName(CoreData::topName);
 
-
             if (fs.is_open())
             {
                 // if more data left in the file...
@@ -405,25 +404,27 @@ namespace ExerciseDbHandling
         std::fstream fs;
 
         try {
-            fs.open(CoreData::file, std::fstream::out);
+            fs.open(CoreData::file);
 
-            fs << CoreData::dataIn;
-            if (!WriteExercisesToFile(fs))
-            {
-                throw "Bad Exercises Write";
+            if (fs.is_open()) {
+                fs << CoreData::dataIn;
+                if (!WriteExercisesToFile(fs))
+                {
+                    throw "Bad Exercises Write";
+                }
+
+                if (!WriteTagsToFile(fs))
+                {
+                    throw "Bad Tags Write";
+                }
+
+                if (!WriteExerciseComponentsToFile(fs))
+                {
+                    throw "Bad Workouts Write";
+                }
+                ret = true;
             }
 
-            if (!WriteTagsToFile(fs))
-            {
-                throw "Bad Tags Write";
-            }
-
-            if (!WriteExerciseComponentsToFile(fs))
-            {
-                throw "Bad Workouts Write";
-            }
-
-            ret = true;
         }
         catch (...)
         {

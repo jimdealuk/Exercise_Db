@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cpp\ExerciseDbFileHandlerFactory.cpp" />
     <ClCompile Include="cpp\ExerciseDbUI.cpp" />
     <ClCompile Include="cpp\ExerciseDb.cpp" />
     <ClCompile Include="cpp\ExerciseDbFileHandler.cpp" />
@@ -136,6 +137,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hpp\CoreData.h" />
+    <ClInclude Include="hpp\ExercideDbFileHandlerFactory.h" />
+    <ClInclude Include="hpp\ExerciseDbFactoryBase.h" />
     <ClInclude Include="hpp\ExerciseDbUI.h" />
     <ClInclude Include="hpp\ExerciseDb.h" />
     <ClInclude Include="hpp\ExerciseDbFileHandler.h" />
